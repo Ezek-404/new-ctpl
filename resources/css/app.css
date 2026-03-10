@@ -1,0 +1,41 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* Custom Preloader Styling */
+.preloader {
+    background-color: #ffffff !important; /* 60% White Background */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Optional: Add a subtle green glow (30%) around your logo while it shakes */
+.preloader img {
+    border: 3px solid #28a745; 
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 0 20px rgba(40, 167, 69, 0.2);
+}
+
+input[type="text"], 
+    textarea, 
+    .form-control {
+        text-transform: uppercase;
+    }
+
+/* Hides "I forgot my password" and "Register" links */
+.login-card-body + .card-footer, 
+.login-box .card-body p:last-child, 
+.login-box .card-body p:nth-last-child(2) {
+    display: none !important;
+}
