@@ -18,9 +18,22 @@ class CtplController extends Controller
     {
         $query = $request->get('query');
         $vehicle = Vehicle::where('plate_no', $query)->orWhere('file_no', $query)->first();
+
         if ($vehicle) {
-            return response()->json(['success' => true, 'data' => $vehicle]);
+            // Fetch the latest transaction date for this vehicle
+            $latestTransaction = \DB::table('ctpl_issuances')
+                // Match based on vehicle_id
+                ->where('vehicle_id', $vehicle->vehicle_id) 
+                ->latest('created_at')
+                ->first();
+
+            return response()->json([
+                'success' => true, 
+                'data' => $vehicle,
+                'latest_transaction' => $latestTransaction ? date('M d, Y h:i A', strtotime($latestTransaction->created_at)) : null
+            ]);
         }
+
         return response()->json(['success' => false, 'message' => 'Vehicle not found.']);
     }
 
@@ -42,6 +55,7 @@ class CtplController extends Controller
                         'address' => $request->address,
                         'year_model' => $request->year_model,
                         'make' => $request->make,
+                        'series' => $request->series,
                         'color' => $request->color,
                         'engine_no' => $request->engine_no,
                         'chassis_no' => $request->chassis_no,

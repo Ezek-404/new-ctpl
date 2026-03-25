@@ -43,6 +43,48 @@
     .btn-group .btn {
         margin-right: 2px; /* Small gap between buttons */
     }
+
+    /* Force the table to respect our defined widths */
+    #vehicleTable {
+        table-layout: fixed !important;
+        width: 100% !important;
+    }
+
+    /* Define equal widths for the first three columns */
+    #vehicleTable th:nth-child(1),
+    #vehicleTable th:nth-child(2),
+    #vehicleTable th:nth-child(3) {
+        width: 30% !important;
+    }
+
+    /* Keep the Action column small */
+    #vehicleTable th:nth-child(4) {
+        width: 10% !important;
+    }
+
+    /* Ensure long text wraps or truncates instead of breaking the layout */
+    #vehicleTable td {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Maintain equal widths */
+    #vehicleTable th:nth-child(1),
+    #vehicleTable th:nth-child(2),
+    #vehicleTable th:nth-child(3) {
+        width: 30% !important;
+    }
+
+    #vehicleTable th:nth-child(4) {
+        width: 10% !important;
+    }
+
+    /* Optional: Ensure the monospaced MV File doesn't look too small when centered */
+    .text-monospace {
+        font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        letter-spacing: 0.5px;
+    }
 </style>
 @stop
 
@@ -53,16 +95,13 @@
             <table class="table table-sm table-hover text-nowrap mb-0" id="vehicleTable">
                 <thead>
                     <tr>
-                        <th>Vehicle Ident.</th>
-                        <th class="assured-col">Assured / Address</th>
-                        <th class="hide-mobile">Engine / Chassis</th>
-                        <th>Type/Color</th>
+                        <th>Assured Name</th>
+                        <th class="text-center">Plate Number</th>
+                        <th class="text-center">MV File Number</th>
                         <th class="text-center">Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>
@@ -74,29 +113,39 @@
     $(document).ready(function() {
         $('#vehicleTable').DataTable({
             processing: true, 
-            serverSide: true, // Only loads 10 rows at a time
+            serverSide: true,
+            autoWidth: false, 
             ajax: "{{ route('admin.vehicles.index') }}",
             columns: [
-                { data: 'file_no', name: 'file_no', render: function(data, type, row) {
-                    return '<strong>'+data+'</strong><br><small class="text-muted">Plate: '+(row.plate_no || '')+'</small>';
-                }},
-                { data: 'assured', name: 'assured', render: function(data, type, row) {
-                    // Hover over "..." to see full text
-                    return '<div class="truncate-name font-weight-bold" title="'+data+'">'+data+'</div>' +
-                        '<div class="truncate-address small text-muted" title="'+row.address+'">'+(row.address || '')+'</div>';
-                }},
-                { data: 'engine_no', name: 'engine_no', render: function(data, type, row) {
-                    return '<small>E: '+data+'<br>C: '+row.chassis_no+'</small>';
-                }},
-                { data: 'denomination', name: 'denomination', render: function(data, type, row) {
-                    return '<strong>'+data+'</strong><br><small class="text-muted text-uppercase">'+row.color+'</small>';
-                }},
+                { 
+                    data: 'assured', 
+                    name: 'assured', 
+                    render: function(data) {
+                        return '<span class="font-weight-bold text-uppercase" title="'+data+'">' + (data || 'N/A') + '</span>';
+                    }
+                },
+                { 
+                    data: 'plate_no', 
+                    name: 'plate_no',
+                    className: 'text-center', // Centers the content
+                    render: function(data) {
+                        return '<strong>' + (data || '---') + '</strong>';
+                    }
+                },
+                { 
+                    data: 'file_no', 
+                    name: 'file_no',
+                    className: 'text-center', // Centers the content
+                    render: function(data) {
+                        return '<span class="text-monospace">' + (data || '---') + '</span>';
+                    }
+                },
                 { 
                     data: 'action', 
                     name: 'action', 
                     orderable: false, 
                     searchable: false, 
-                    className: 'action-col' // Updated class name here
+                    className: 'text-center' 
                 }
             ]
         });

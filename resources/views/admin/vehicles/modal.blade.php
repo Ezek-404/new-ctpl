@@ -1,4 +1,4 @@
-<div class="modal fade" id="editVehicleModal" tabindex="-1" role="dialog" aria-labelledby="editVehicleModalLabel" aria-hidden="true">
+<div class="modal fade" id="editVehicleModal" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius: 4px; border: none;">
             <div class="modal-header bg-light">

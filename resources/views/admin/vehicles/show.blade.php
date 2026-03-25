@@ -39,7 +39,7 @@
         .v-value { font-size: 1.25rem; font-weight: 800; color: #0056b3; line-height: 1.1; }
         .v-sub-value { font-size: 1rem; font-weight: 700; color: #212529; margin-bottom: 2px; }
         
-        .text-muted-custom { color: #6c757d; font-weight: 500; }
+        .text-muted-custom { color: #000; font-weight: 500; }
         .text-active-blue { color: #0056b3; font-weight: 800; text-transform: uppercase; }
 
         hr { border-top: 1px solid #dee2e6; margin: 25px 0; }
@@ -124,6 +124,10 @@
             <div class="col-md-3 border-left">
                 <div class="v-sub-label">Make</div>
                 <div class="v-sub-value text-uppercase">{{ $vehicle->make ?? 'N/A' }}</div>
+            </div>
+            <div class="col-md-3 border-left">
+                <div class="v-sub-label">Series</div>
+                <div class="v-sub-value text-uppercase">{{ $vehicle->series ?? 'N/A' }}</div>
             </div>
             <div class="col-md-3 border-left">
                 <div class="v-sub-label">Year Model</div>

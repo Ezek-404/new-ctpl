@@ -93,15 +93,15 @@
     .date-issued { top: 1.92in; left: 5.60in; }
     .date-from   { top: 2.52in; left: 5.60in; }
     .date-to     { top: 2.52in; left: 7.33in; }
-    .year        { top: 3.03in; left: 0.35in; }
-    .make        { top: 3.03in; left: 1.57in; }
-    .type        { top: 3.03in; left: 4.1in; }
-    .color       { top: 3.03in; left: 5.74in; width: 1.3in; display: block; overflow: hidden;}
+    .year        { top: 3.08in; left: 0.35in; }
+    .make        { top: 3.08in; left: 1.57in; }
+    .type        { top: 3.08in; left: 4.1in; }
+    .color       { top: 3.08in; left: 5.74in; width: 1.3in; display: block; overflow: hidden;}
     .color div   { white-space: normal; line-height: 0.9; }
-    .file        { top: 3.03in; left: 7.19in; }
-    .plate       { top: 3.45in; left: 0.23in; }
-    .chassis     { top: 3.45in; left: 1.75in; }
-    .engine      { top: 3.45in; left: 4.05in; }
+    .file        { top: 3.08in; left: 7.12in; }
+    .plate       { top: 3.50in; left: 0.23in; }
+    .chassis     { top: 3.50in; left: 1.75in; }
+    .engine      { top: 3.50in; left: 4.05in; }
 
     /* 3. EXCEL MARGIN APPLICATION (@media print) */
     @media print {

@@ -6,8 +6,13 @@
 <br>
 <div class="card card-outline card-primary">
     <div class="card card-outline card-info">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Vehicle Quick Search</h3>
+            <div class="ml-auto">
+                <span id="latest-trans-container" class="badge badge-warning p-2" style="display:none;">
+                    <i class="fas fa-history"></i> Last Transaction: <span id="latest-date-display"></span>
+                </span>
+            </div>
         </div>
         <div class="card-body">
             <div class="input-group">
@@ -31,9 +36,10 @@
 
             {{-- Section 2: Vehicle Info --}}
             <div class="row">
-                <x-adminlte-input name="year_model" type="number" placeholder="Year Model" label="Year Model" fgroup-class="col-md-4" required/>
-                <x-adminlte-input name="make" label="Make" placeholder="Make/ Manufacturer" fgroup-class="col-md-4" required/>
-                <x-adminlte-input name="color" label="Color" placeholder="Color" fgroup-class="col-md-4" required/>
+                <x-adminlte-input name="year_model" type="number" placeholder="Year Model" label="Year Model" fgroup-class="col-md-3" required/>
+                <x-adminlte-input name="make" label="Make" placeholder="Make/ Manufacturer" fgroup-class="col-md-3" required/>
+                <x-adminlte-input name="series" label="Series" placeholder="Series" fgroup-class="col-md-3" required/>
+                <x-adminlte-input name="color" label="Color" placeholder="Color" fgroup-class="col-md-3" required/>
             </div>
 
             <div class="row">
@@ -175,6 +181,9 @@ $(document).ready(function() {
             method: "GET",
             data: { query: query },
             success: function(response) {
+                // Reset visibility of the latest transaction badge
+                $('#latest-trans-container').hide();
+
                 if (response.success) {
                     const match = response.data;
                     hiddenVehicleId.val(match.vehicle_id); 
@@ -182,31 +191,34 @@ $(document).ready(function() {
                     $('#address').val(match.address);
                     $('#year_model').val(match.year_model);
                     $('#make').val(match.make);
+                    $('#series').val(match.series);
                     $('#color').val(match.color);
                     $('#plate_no').val(match.plate_no);
                     $('#file_no').val(match.file_no);
                     $('#engine_no').val(match.engine_no);
                     $('#chassis_no').val(match.chassis_no);
 
+                    // DISPLAY THE LATEST DATE IF IT EXISTS
+                    if (response.latest_transaction) {
+                        $('#latest-date-display').text(response.latest_transaction);
+                        $('#latest-trans-container').fadeIn();
+                    }
+
                     if (match.denomination) {
                         denomSelect.val(match.denomination).trigger('change');
                     }
                     toastr.success('Vehicle record loaded!');
-                    // Focus COC input if record exists
                     setTimeout(() => { cocInput.focus(); }, 150); 
                 } else {
-                    // NEW VEHICLE DETECTED LOGIC
                     hiddenVehicleId.val(''); 
                     toastr.info('New vehicle detected.');
                     $('#plate_no').val(query.toUpperCase());
-                    
-                    // Automatically focus the Assured Name field for new entries
                     setTimeout(() => { assuredInput.focus(); }, 150);
                 }
                 checkForm();
             },
             error: function() { toastr.error('Search failed.'); },
-            complete: function() { searchBtn.prop('disabled', false).html('<i class="fas fa-search"></i> Search'); }
+            complete: function() { searchBtn.prop('disabled', false).html('<i class="fas fa-search"></i> Search & Autofill'); }
         });
     }
 
@@ -277,6 +289,7 @@ $(document).ready(function() {
         searchField.val('');
         hiddenCocId.val('');
         hiddenVehicleId.val('');
+        $('#latest-trans-container').hide(); // Hide the date on clear
         cocIcon.html('<i class="fas fa-question-circle text-muted"></i>');
         errMissing.hide();
         errUsed.hide();

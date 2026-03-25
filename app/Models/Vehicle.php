@@ -11,7 +11,7 @@ class Vehicle extends Model
     public $incrementing = true;
 
     protected $fillable = [
-        'assured', 'address', 'year_model', 'make', 'color', 
+        'assured', 'address', 'year_model', 'make', 'series','color', 
         'plate_no', 'file_no', 'engine_no', 'chassis_no', 'denomination'
     ];
 
