@@ -96,8 +96,8 @@
                 <thead>
                     <tr>
                         <th>Assured Name</th>
-                        <th class="text-center">Plate Number</th>
-                        <th class="text-center">MV File Number</th>
+                        <th class="text-center">Plate No.</th>
+                        <th class="text-center">MV File No.</th>
                         <th class="text-center">Action</th>
                     </tr>
                 </thead>
