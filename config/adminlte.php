@@ -332,12 +332,12 @@ return [
             'active' => ['saved-transactions*'],
         ],
         
-        'ARCHIVE',
-        [
-            'text' => 'Vehicle Records',
-            'url'  => 'admin/vehicle-records',
-            'icon' => 'fas fa-fw fa-car',
-        ],
+        //'ARCHIVE',
+        //[
+        //    'text' => 'Vehicle Records',
+        //    'url'  => 'admin/vehicle-records',
+        //    'icon' => 'fas fa-fw fa-car',
+        //],
 
         // Profile Section
         'ACCOUNT SETTINGS',
