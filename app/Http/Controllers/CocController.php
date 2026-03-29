@@ -4,18 +4,31 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CocTable;
+use Yajra\DataTables\Facades\DataTables;
 
 class CocController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $cocs    = CocTable::orderBy('coc_id', 'desc')->get();
-        $pcCount = CocTable::where('coc_type', 'PC')->count();
-        $tcCount = CocTable::where('coc_type', 'TC')->count();
-        $mcCount = CocTable::where('coc_type', 'MC')->count();
-        $cvCount = CocTable::where('coc_type', 'CV')->count();
+        if ($request->ajax()) {
+            $data = CocTable::select(['coc_no', 'coc_type', 'coc_status', 'created_at']);
+            
+            return DataTables::of($data)
+                ->editColumn('coc_type', function($row) {
+                    return '<span class="badge badge-info">'.$row->coc_type.'</span>';
+                })
+                ->editColumn('coc_status', function($row) {
+                    $class = ($row->coc_status == 'Available') ? 'success' : 'danger';
+                    return '<span class="badge badge-'.$class.'">'.$row->coc_status.'</span>';
+                })
+                ->editColumn('created_at', function($row) {
+                    return $row->created_at->format('M d, Y h:i A');
+                })
+                ->rawColumns(['coc_type', 'coc_status'])
+                ->make(true);
+        }
 
-        return view('admin.coc.index', compact('cocs', 'pcCount', 'tcCount', 'mcCount', 'cvCount'));
+        return view('admin.coc.index'); // No longer passing $cocs here
     }
 
     public function seriesUpload(Request $request)

@@ -5,6 +5,7 @@ use App\Models\CocTable;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class CtplController extends Controller
 {
@@ -77,10 +78,90 @@ class CtplController extends Controller
         }
     }
 
-    public function savedTransactions()
+    public function savedTransactions(Request $request)
     {
-        $issuance = CtplIssuance::with('vehicle')->orderBy('created_at', 'desc')->get();
-        return view("admin.ctpl.transactions", compact('issuance'));
+        if ($request->ajax()) {
+            // Eager load relations to include MV File in search results
+            $data = CtplIssuance::with(['vehicle', 'coc'])->select('ctpl_issuances.*');
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                // Format Date & Time into a single line
+                ->editColumn('created_at', function($row) {
+                    return '<span class="text-nowrap font-weight-bold">' . 
+                            $row->created_at->format('M d, Y') . ' | ' . 
+                            $row->created_at->format('h:i A') . 
+                        '</span>';
+                })
+                // Separate Column for COC No
+                ->addColumn('coc_no', function($row) {
+                    return '<span class="text-danger font-weight-bold">' . ($row->coc->coc_no ?? 'N/A') . '</span>';
+                })
+                // Separate Column for Agent
+                ->editColumn('agent', function($row) {
+                    return '<span class="text-uppercase">' . ($row->agent ?? 'N/A') . '</span>';
+                })
+                // Assured column (MV File removed from display)
+                ->editColumn('vehicle.assured', function($row) {
+                    return '<span class="text-uppercase font-weight-bold">' . ($row->vehicle->assured ?? 'N/A') . '</span>';
+                })
+                // Compact Action Column with Icons
+                ->addColumn('action', function($row) {
+                    // We use the transaction_id for all actions now
+                    $viewUrl  = route('admin.ctpl.view', $row->transaction_id);
+                    $editUrl  = route('admin.ctpl.edit', $row->transaction_id);
+                    $printUrl = route('admin.ctpl.print', $row->transaction_id);
+
+                    return '
+                    <div class="action-buttons d-flex justify-content-center">
+                        <a href="'.$viewUrl.'" class="btn btn-sm text-primary p-1 mx-1" title="View Details">
+                            <i class="fa fa-lg fa-eye"></i>
+                        </a>
+                        <a href="'.$editUrl.'" class="btn btn-sm text-warning p-1 mx-1" title="Edit Policy">
+                            <i class="fa fa-lg fa-pen"></i>
+                        </a>
+                        <a href="'.$printUrl.'" class="btn btn-sm text-info p-1 mx-1" title="Print Policy">
+                            <i class="fa fa-lg fa-print"></i>
+                        </a>
+                    </div>';
+                })
+                ->rawColumns(['created_at', 'agent', 'coc_no', 'vehicle.assured', 'action'])
+                ->make(true);
+        }
+
+        return view('admin.ctpl.transactions');
+    }
+
+    // Display the View page we created
+    public function show($id)
+    {
+        $issuance = \App\Models\CtplIssuance::with(['vehicle', 'coc'])->findOrFail($id);
+        
+        return view('admin.ctpl.view', compact('issuance'));
+    }
+
+    // Display the Edit page
+    public function edit($id)
+    {
+        $issuance = \App\Models\CtplIssuance::with(['vehicle', 'coc'])->findOrFail($id);
+        return view('admin.ctpl.edit', compact('issuance'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $issuance = \App\Models\CtplIssuance::with('vehicle')->findOrFail($id);
+
+        // Update the linked vehicle record
+        $issuance->vehicle->update([
+            'assured'    => strtoupper($request->assured),
+            'plate_no'   => strtoupper($request->plate_no),
+            'file_no'    => $request->file_no,
+            'engine_no'  => $request->engine_no,
+            'chassis_no' => $request->chassis_no,
+        ]);
+
+        return redirect()->route('admin.ctpl.view', $id)
+                        ->with('success', 'Vehicle details updated successfully.');
     }
 
     public function showPrint($id)

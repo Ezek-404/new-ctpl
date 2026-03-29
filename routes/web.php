@@ -5,7 +5,6 @@ use App\Http\Controllers\CocController;
 use App\Http\Controllers\CtplController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\VehicleController;
 
 // --- Public Routes ---
 Route::get('/', function () {
@@ -18,10 +17,10 @@ Auth::routes();
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     
-    // FIX: Main Issuance Route (Matches your 404 URL)
+    // CTPL Issuance Form
     Route::get('/ctpl-issuance', [CtplController::class, 'index'])->name('admin.ctpl.index');
     
-    // FIX: Saved Transactions Route
+    // Saved Transactions (The Datatable Page)
     Route::get('/saved-transactions', [CtplController::class, 'savedTransactions'])->name('admin.saved_transactions');
 
     Route::prefix('user/profile')->name('profile.')->group(function () {
@@ -42,18 +41,15 @@ Route::middleware(['auth'])->prefix('coc-management')->name('admin.coc.')->group
 // --- Admin Post/Action Routes ---
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     
-    // CTPL Actions (Store, Print, Search)
+    // CTPL Actions (Store, Print, View, Edit, Search)
     Route::group(['prefix' => 'ctpl', 'as' => 'ctpl.'], function () {
         Route::post('/store', [CtplController::class, 'store'])->name('store');
-        Route::get('/print/{id}', [CtplController::class, 'showPrint'])->name('print');
         Route::get('/search-vehicle', [CtplController::class, 'searchVehicle'])->name('search_vehicle');
-    });
-
-    // Vehicle Records
-    Route::prefix('vehicle-records')->name('vehicles.')->group(function () {
-        Route::get('/', [VehicleController::class, 'index'])->name('index');
-        Route::get('/{id}', [VehicleController::class, 'show'])->name('show');
-        Route::get('/{id}/edit', [VehicleController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [VehicleController::class, 'update'])->name('update');
+        
+        // Transaction Actions
+        Route::get('/view/{id}', [CtplController::class, 'show'])->name('view');
+        Route::get('/edit/{id}', [CtplController::class, 'edit'])->name('edit'); // Added Edit to CtplController
+        Route::put('/update/{id}', [CtplController::class, 'update'])->name('update'); // Added Update to CtplController
+        Route::get('/print/{id}', [CtplController::class, 'showPrint'])->name('print');
     });
 });

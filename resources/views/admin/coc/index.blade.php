@@ -13,40 +13,34 @@
 @stop
 
 @section('content')
-    {{-- NO MORE RED BANNER CODE HERE --}}
     <div class="card">
         <div class="card-body">
             @php 
                 $heads = ['COC Number', 'Type', 'Status', 'Date Created']; 
                 
                 $config = [
-                    'autoWidth' => false, // Disables automatic content-based width calculation
+                    'processing' => true,
+                    'serverSide' => true,
+                    'ajax' => route('admin.coc.index'), 
+                    'columns' => [
+                        ['data' => 'coc_no', 'name' => 'coc_no'],
+                        ['data' => 'coc_type', 'name' => 'coc_type'],
+                        ['data' => 'coc_status', 'name' => 'coc_status'],
+                        ['data' => 'created_at', 'name' => 'created_at'],
+                    ],
+                    'order' => [[3, 'desc']], 
+                    'autoWidth' => false,
                     'columnDefs' => [
                         [
-                            'width' => '25%', 
                             'targets' => [0, 1, 2, 3], 
-                            'className' => 'text-left' // Forces left alignment for all 4 columns
+                            'className' => 'text-left' 
                         ]
                     ],
                 ];
             @endphp
 
-            <x-adminlte-datatable id="table1" :heads="$heads" :config="$config" striped hoverable bordered compressed>
-                @foreach($cocs as $coc)
-                    <tr>
-                        <td>{{ $coc->coc_no }}</td>
-                        <td>
-                            <span class="badge badge-info">{{ $coc->coc_type }}</span>
-                        </td>
-                        <td>
-                            <span class="badge badge-{{ $coc->coc_status == 'Available' ? 'success' : 'danger' }}">
-                                {{ $coc->coc_status }}
-                            </span>
-                        </td>
-                        <td>{{ $coc->created_at->format('M d, Y h:i A') }}</td>
-                    </tr>
-                @endforeach
-            </x-adminlte-datatable>
+            {{-- Note: No @foreach inside here. Server-side handles the data. --}}
+            <x-adminlte-datatable id="table1" :heads="$heads" :config="$config" striped hoverable bordered compressed />
         </div>
     </div>
 
@@ -62,7 +56,6 @@
                     <form id="manualAddForm" action="{{ route('admin.coc.seriesUpload') }}" method="POST">
                         @csrf
                         <div class="row">
-                            {{-- ID 'add_start' used for auto-focus and range validation --}}
                             <x-adminlte-input name="start_no" id="add_start" type="number" label="Start Number" fgroup-class="col-md-4" placeholder="e.g. 1001" required/>
                             <x-adminlte-input name="end_no" id="add_end" type="number" label="End Number" fgroup-class="col-md-4" placeholder="e.g. 1100" required/>
                             <x-adminlte-select name="coc_type" label="COC Type" fgroup-class="col-md-4" required>
@@ -102,7 +95,6 @@
             @csrf
             @method('DELETE')
             <div class="row">
-                {{-- Added type="number" and specific IDs for validation --}}
                 <x-adminlte-input name="start_no" id="del_start" label="Start Number" type="number" fgroup-class="col-md-6" required/>
                 <x-adminlte-input name="end_no" id="del_end" label="End Number" type="number" fgroup-class="col-md-6" required/>
             </div>
@@ -114,7 +106,6 @@
                 </ul>
             </div>
             <x-slot name="footerSlot">
-                {{-- ID changed to btnPreviewDelete to match script --}}
                 <x-adminlte-button theme="info" label="Check Range" id="btnPreviewDelete"/>
                 <x-adminlte-button theme="danger" label="Confirm Delete" id="confirmSeriesDelete" class="d-none"/>
             </x-slot>
@@ -127,13 +118,16 @@
     $(document).ready(function() {
         const MAX_LIMIT = 500;
 
+        // Ensure the table reloads if data changes
+        const table = $('#table1').DataTable();
+
         /** 1. AUTO-FOCUS FEATURE **/
         $('#modalAddCoc').on('shown.bs.modal', function () {
-            $('#add_start').focus();
+            setTimeout(() => { $('#add_start').trigger('focus'); }, 150);
         });
         
         $('#modalDeleteSeries').on('shown.bs.modal', function () {
-            $('#del_start').focus();
+            setTimeout(() => { $('#del_start').trigger('focus'); }, 150);
         });
 
         function setValidationUI(isValid) {
@@ -141,7 +135,6 @@
             $('#btnSubmitAdd').prop('disabled', !isValid);
         }
 
-        // Reset Add UI on input
         $('#add_start, #add_end').on('input', function() {
             $(this).removeClass('is-valid is-invalid');
             $('#btnSubmitAdd').prop('disabled', true);
@@ -152,10 +145,9 @@
             let startVal = $('#add_start').val();
             let endVal = $('#add_end').val();
 
-            // Block Letters
             if (!/^\d+$/.test(startVal) || !/^\d+$/.test(endVal)) {
                 setValidationUI(false);
-                return Swal.fire('Invalid', 'Invalid Entry.', 'error');
+                return Swal.fire('Invalid', 'Digits only please.', 'error');
             }
 
             let start = parseInt(startVal);
@@ -163,12 +155,12 @@
 
             if (end < start) {
                 setValidationUI(false);
-                return Swal.fire('Invalid Range', 'End number must be greater than start.', 'error');
+                return Swal.fire('Invalid Range', 'End must be > Start.', 'error');
             }
 
             if ((end - start) + 1 > MAX_LIMIT) {
                 setValidationUI(false);
-                return Swal.fire('Limit Exceeded', 'Maximum ' + MAX_LIMIT + ' COCs allowed.', 'warning');
+                return Swal.fire('Limit Exceeded', 'Max ' + MAX_LIMIT + ' allowed.', 'warning');
             }
 
             $('#checkSpinner').removeClass('d-none');
@@ -180,32 +172,18 @@
                     Swal.fire('Error', data.total + ' COC already exist.', 'error');
                 } else {
                     setValidationUI(true);
-                    Swal.fire('Available', 'Series is clear for generation.', 'success');
+                    Swal.fire('Available', 'Series is clear.', 'success');
                 }
-            }).fail(function() {
-                Swal.fire('Error', 'Check your web.php route naming.', 'error');
             }).always(function() {
                 $('#checkSpinner').addClass('d-none');
                 $('#checkText').text('Check Availability');
             });
         });
 
-        /** 3. DELETE RANGE: PREVIEW LOGIC **/
+        /** 3. DELETE RANGE PREVIEW **/
         $('#btnPreviewDelete').on('click', function() {
-            let startVal = $('#del_start').val();
-            let endVal = $('#del_end').val();
-
-            // Block Letters for Delete too
-            if (!/^\d+$/.test(startVal) || !/^\d+$/.test(endVal)) {
-                return Swal.fire('Numbers Only', 'Only digits are allowed for COC numbers.', 'error');
-            }
-
-            let start = parseInt(startVal);
-            let end = parseInt(endVal);
-
-            if (end < start) {
-                return Swal.fire('Invalid Range', 'End number must be higher than start.', 'error');
-            }
+            let start = $('#del_start').val();
+            let end = $('#del_end').val();
 
             $.get("{{ route('admin.coc.previewSeries') }}", {start_no: start, end_no: end}, function(data) {
                 $('#totalFound').text(data.total);
@@ -214,32 +192,22 @@
                 $('#seriesPreview').removeClass('d-none');
 
                 if (parseInt(data.used) > 0) {
-                    Swal.fire('Locked', 'This range contains "Used" records and cannot be deleted.', 'error');
+                    Swal.fire('Locked', 'Contains "Used" records.', 'error');
                     $('#confirmSeriesDelete').addClass('d-none');
                 } else if (parseInt(data.available) > 0) {
                     $('#confirmSeriesDelete').removeClass('d-none');
-                } else {
-                    Swal.fire('Empty', 'No records found in this range.', 'info');
-                    $('#confirmSeriesDelete').addClass('d-none');
                 }
-            }).fail(function() {
-                Swal.fire('Server Error', 'Could not fetch range data.', 'error');
             });
         });
         
-        // Final Confirmation for Delete
         $('#confirmSeriesDelete').on('click', function() {
             Swal.fire({
-                title: 'Are you sure?',
-                text: "This will permanently delete the Available COCs in this range!",
+                title: 'Confirm Delete?',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete them!'
+                confirmButtonText: 'Yes, delete!'
             }).then((result) => {
-                if (result.isConfirmed) {
-                    $('#seriesDeleteForm').submit();
-                }
+                if (result.isConfirmed) $('#seriesDeleteForm').submit();
             });
         });
     });
