@@ -81,12 +81,15 @@ class CtplController extends Controller
     public function savedTransactions(Request $request)
     {
         if ($request->ajax()) {
-            // Eager load relations to include MV File in search results
             $data = CtplIssuance::with(['vehicle', 'coc'])->select('ctpl_issuances.*');
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                // Format Date & Time into a single line
+                // --- ADDED: Checkbox Column ---
+                ->addColumn('checkbox', function($row) {
+                    return '<input type="checkbox" class="row-checkbox" value="'.$row->id.'">';
+                })
+                // Format Date & Time
                 ->editColumn('created_at', function($row) {
                     return '<span class="text-nowrap font-weight-bold">' . 
                             $row->created_at->format('M d, Y') . ' | ' . 
@@ -97,17 +100,13 @@ class CtplController extends Controller
                 ->addColumn('coc_no', function($row) {
                     return '<span class="text-danger font-weight-bold">' . ($row->coc->coc_no ?? 'N/A') . '</span>';
                 })
-                // Separate Column for Agent
                 ->editColumn('agent', function($row) {
                     return '<span class="text-uppercase">' . ($row->agent ?? 'N/A') . '</span>';
                 })
-                // Assured column (MV File removed from display)
                 ->editColumn('vehicle.assured', function($row) {
                     return '<span class="text-uppercase font-weight-bold">' . ($row->vehicle->assured ?? 'N/A') . '</span>';
                 })
-                // Compact Action Column with Icons
                 ->addColumn('action', function($row) {
-                    // We use the transaction_id for all actions now
                     $viewUrl  = route('admin.ctpl.view', $row->transaction_id);
                     $editUrl  = route('admin.ctpl.edit', $row->transaction_id);
                     $printUrl = route('admin.ctpl.print', $row->transaction_id);
@@ -125,7 +124,8 @@ class CtplController extends Controller
                         </a>
                     </div>';
                 })
-                ->rawColumns(['created_at', 'agent', 'coc_no', 'vehicle.assured', 'action'])
+                // --- UPDATED: Included 'checkbox' in rawColumns ---
+                ->rawColumns(['checkbox', 'created_at', 'agent', 'coc_no', 'vehicle.assured', 'action'])
                 ->make(true);
         }
 
