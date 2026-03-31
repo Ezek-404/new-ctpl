@@ -151,7 +151,6 @@ $(document).ready(function() {
 
             let expiDateObj = new Date(inceDateObj);
             expiDateObj.setFullYear(expiDateObj.getFullYear() + 1);
-            expiDateObj.setDate(expiDateObj.getDate() - 1);
 
             let expiDate = ((expiDateObj.getMonth()+1)+'').padStart(2,'0') + '/' +
                            (expiDateObj.getDate()+'').padStart(2,'0') + '/' +
