@@ -16,6 +16,7 @@ class CtplIssuance extends Model
     protected $fillable = [
         'agent',
         'policy_no',
+        'amount',
         'coc_id',      // UPDATE 1: Renamed from 'id' to 'coc_id'
         'vehicle_id',
     ];

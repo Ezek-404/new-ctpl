@@ -44,35 +44,69 @@ class CtplController extends Controller
             'coc_id_hidden' => 'required|exists:coc_table,coc_id',
             'policy_no' => 'required|string',
             'assured' => 'required',
+            'denomination' => 'required|string', // Ensure denomination is present for logic
+            'amount' => [
+                'required',
+                'numeric',
+                function ($attribute, $value, $fail) use ($request) {
+                    // Define logic ranges to match your JS priceConfig
+                    $ranges = [
+                        'MC' => [550, 650], 'MTC' => [550, 650], 'TRICYCLE' => [550, 650],
+                        'CAR' => [950, 1380], 'SEDAN' => [950, 1380], 'HATCHBACK' => [950, 1380], 
+                        'PASSENGER CAR' => [950, 1380], 'COUPE' => [950, 1380],
+                        'UTILITY VEHICLE' => [1050, 1380], 'SUV' => [1050, 1380],
+                        'TRUCK' => [1500, 2000], 'TRAILER' => [1500, 2000],
+                    ];
+
+                    $denom = $request->denomination;
+
+                    if (isset($ranges[$denom])) {
+                        [$min, $max] = $ranges[$denom];
+                        if ($value < $min || $value > $max) {
+                            $fail("The amount for $denom must be between ₱$min and ₱$max.");
+                        }
+                    }
+                },
+            ],
         ]);
+
         try {
             $transactionId = DB::transaction(function () use ($request) {
+                // 1. Handle Vehicle Info
                 $vehicle = Vehicle::updateOrCreate(
                     ['vehicle_id' => $request->vehicle_id_hidden],
                     [
-                        'plate_no' => $request->plate_no,
-                        'file_no' => $request->file_no,
-                        'assured' => $request->assured,
-                        'address' => $request->address,
-                        'year_model' => $request->year_model,
-                        'make' => $request->make,
-                        'series' => $request->series,
-                        'color' => $request->color,
-                        'engine_no' => $request->engine_no,
-                        'chassis_no' => $request->chassis_no,
+                        'plate_no'     => $request->plate_no,
+                        'file_no'      => $request->file_no,
+                        'assured'      => $request->assured,
+                        'address'      => $request->address,
+                        'year_model'   => $request->year_model,
+                        'make'         => $request->make,
+                        'series'       => $request->series,
+                        'color'        => $request->color,
+                        'engine_no'    => $request->engine_no,
+                        'chassis_no'   => $request->chassis_no,
                         'denomination' => $request->denomination,
                     ]
                 );
+
+                // 2. Mark COC as Used
                 CocTable::where('coc_id', $request->coc_id_hidden)->update(['coc_status' => 'Used']);
+
+                // 3. Create Issuance with the validated amount
                 $issuance = CtplIssuance::create([
-                    'agent' => $request->agent,
-                    'policy_no' => $request->policy_no,
-                    'coc_id' => $request->coc_id_hidden,
+                    'agent'      => $request->agent,
+                    'amount'     => $request->amount,
+                    'policy_no'  => $request->policy_no,
+                    'coc_id'     => $request->coc_id_hidden,
                     'vehicle_id' => $vehicle->vehicle_id,    
                 ]);
+
                 return $issuance->transaction_id;
             });
+
             return redirect()->route('admin.ctpl.print', ['id' => $transactionId]);
+
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage())->withInput();
         }

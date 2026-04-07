@@ -99,11 +99,20 @@
                     </small>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <x-adminlte-input name="policy_no" id="policy_no" label="Policy Number" placeholder="Type Policy Number" required disabled/>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <x-adminlte-input name="agent" label="Agent" required/>
+                </div>
+                <div class="col-md-2">
+                    <x-adminlte-input name="amount" label="Policy Amount" type="number" step="0.01" placeholder="0.00" required>
+                        <x-slot name="prependSlot">
+                            <div class="input-group-text bg-olive">
+                                <b>₱</b>
+                            </div>
+                        </x-slot>
+                    </x-adminlte-input>
                 </div>
             </div>
         </div>
@@ -140,14 +149,36 @@ $(document).ready(function() {
     const errMissing = $('#err-missing');
     const errUsed = $('#err-used');
     const policyInput = $('#policy_no');
+    const amountInput = $('#amount'); 
     const saveButton = $('#saveButton');
     const hiddenCocId = $('#coc_id_hidden');
     const hiddenVehicleId = $('#vehicle_id_hidden'); 
     const searchField = $('#vehicle_query');
     const form = $('#issuanceForm'); 
-    
-    // Target the Assured Name field for autofocus
     const assuredInput = $('#assured');
+
+    // --- 0. PRICE CONFIGURATION (MIN/MAX RANGES) ---
+    const priceConfig = {
+        // MC Type: 550 - 650
+        'MC': { min: 550, max: 650 }, 
+        'MTC': { min: 550, max: 650 }, 
+        'TRICYCLE': { min: 550, max: 650 },
+        
+        // PC Type: 950 - 1380
+        'CAR': { min: 950, max: 1380 }, 
+        'SEDAN': { min: 950, max: 1380 }, 
+        'HATCHBACK': { min: 950, max: 1380 }, 
+        'PASSENGER CAR': { min: 950, max: 1380 }, 
+        'COUPE': { min: 950, max: 1380 },
+        
+        // UV Type: 1050 - 1380
+        'UTILITY VEHICLE': { min: 1050, max: 1380 }, 
+        'SUV': { min: 1050, max: 1380 },
+        
+        // CV Type: 1500 - 2000
+        'TRUCK': { min: 1500, max: 2000 }, 
+        'TRAILER': { min: 1500, max: 2000 }
+    };
 
     toastr.options = { "closeButton": true, "progressBar": true, "positionClass": "toast-top-right" };
 
@@ -160,8 +191,9 @@ $(document).ready(function() {
         const cocId = hiddenCocId.val();
         const policy = policyInput.val() ? policyInput.val().trim() : "";
         const assured = assuredInput.val() ? assuredInput.val().trim() : "";
+        const amount = amountInput.val() ? parseFloat(amountInput.val()) : 0;
 
-        const isReady = (cocId !== "" && policy !== "" && assured !== "");
+        const isReady = (cocId !== "" && policy !== "" && assured !== "" && amount > 0);
         saveButton.prop('disabled', !isReady);
     }
 
@@ -181,9 +213,7 @@ $(document).ready(function() {
             method: "GET",
             data: { query: query },
             success: function(response) {
-                // Reset visibility of the latest transaction badge
                 $('#latest-trans-container').hide();
-
                 if (response.success) {
                     const match = response.data;
                     hiddenVehicleId.val(match.vehicle_id); 
@@ -198,7 +228,6 @@ $(document).ready(function() {
                     $('#engine_no').val(match.engine_no);
                     $('#chassis_no').val(match.chassis_no);
 
-                    // DISPLAY THE LATEST DATE IF IT EXISTS
                     if (response.latest_transaction) {
                         $('#latest-date-display').text(response.latest_transaction);
                         $('#latest-trans-container').fadeIn();
@@ -218,11 +247,11 @@ $(document).ready(function() {
                 checkForm();
             },
             error: function() { toastr.error('Search failed.'); },
-            complete: function() { searchBtn.prop('disabled', false).html('<i class="fas fa-search"></i> Search & Autofill'); }
+            complete: function() { searchBtn.prop('disabled', false).html('<i class="fas fa-search"></i>'); }
         });
     }
 
-    // --- 3. COC VALIDATION (MATCH & STATUS) ---
+    // --- 3. COC VALIDATION ---
     cocInput.on('input', function() {
         const typedNo = $(this).val().trim();
         const selectedType = denomSelect.find(':selected').data('type');
@@ -235,7 +264,6 @@ $(document).ready(function() {
 
         if (typedNo.length > 0) {
             let matchFound = false;
-
             $('.coc-item').each(function() {
                 const itemNo = String($(this).data('no'));
                 const itemType = $(this).data('type');
@@ -267,20 +295,32 @@ $(document).ready(function() {
 
     // --- 4. EVENT LISTENERS ---
     $('#btn-search-vehicle').on('click', performVehicleSearch);
-
     searchField.on('keydown', function(e) {
         if (e.keyCode === 13) { e.preventDefault(); performVehicleSearch(); }
     });
 
     policyInput.on('input', checkForm);
     assuredInput.on('input', checkForm);
+    amountInput.on('input', checkForm);
 
+    // Apply Price Rules on Denomination Change
     denomSelect.on('change', function() {
-        cocInput.val('').prop('disabled', !$(this).val());
+        const val = $(this).val();
+        cocInput.val('').prop('disabled', !val);
         policyInput.val('').prop('disabled', true);
         hiddenCocId.val('');
         errMissing.hide();
         errUsed.hide();
+
+        if (val && priceConfig[val]) {
+            const config = priceConfig[val];
+            amountInput.val(config.min.toFixed(2)); // Set default to min
+            amountInput.attr('min', config.min);    // Prevent values below min
+            amountInput.attr('max', config.max);    // Suggest max boundary
+        } else {
+            amountInput.val('').removeAttr('min').removeAttr('max');
+        }
+
         checkForm();
     });
 
@@ -289,7 +329,8 @@ $(document).ready(function() {
         searchField.val('');
         hiddenCocId.val('');
         hiddenVehicleId.val('');
-        $('#latest-trans-container').hide(); // Hide the date on clear
+        amountInput.val('').removeAttr('min').removeAttr('max');
+        $('#latest-trans-container').hide(); 
         cocIcon.html('<i class="fas fa-question-circle text-muted"></i>');
         errMissing.hide();
         errUsed.hide();
@@ -301,9 +342,22 @@ $(document).ready(function() {
 
     saveButton.on('click', function(e) {
         e.preventDefault(); 
+        
+        const currentDenom = denomSelect.val();
+        const currentAmount = parseFloat(amountInput.val());
+        const config = priceConfig[currentDenom];
+
+        // Validate Range before submission
+        if (config) {
+            if (currentAmount < config.min || currentAmount > config.max) {
+                toastr.error(`Invalid Amount! For ${currentDenom}, price must be between ${config.min} and ${config.max}.`);
+                return;
+            }
+        }
+
         Swal.fire({
             title: 'Confirm Issuance',
-            text: "Save this transaction?",
+            text: `Save transaction with amount ₱${currentAmount.toFixed(2)}?`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#28a745',
