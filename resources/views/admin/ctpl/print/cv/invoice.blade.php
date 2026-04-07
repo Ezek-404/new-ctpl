@@ -24,7 +24,7 @@
 
     /* 2. ALIGNMENT COORDINATES */
     .invoice-date          { top: 1.86in; left: 3.72in; }
-    .invoice-received-from { top: 2.17in; left: 1.8in; width: 3.5in; text-align: center;}
+    .invoice-received-from { top: 2.17in; left: 1.8in; width: 3in; text-align: center;}
     .invoice-plate         { top: 2.58in; left: 2.2in; }
     .invoice-amount-sub    { top: 2.81in; left: 2.42in; font-size: 18px; }
     .invoice-amount-total  { top: 7.95in; left: 4.4in; font-size: 26px; }
