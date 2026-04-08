@@ -119,27 +119,29 @@ class CtplController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                // --- ADDED: Checkbox Column ---
+                // --- Checkbox Column ---
                 ->addColumn('checkbox', function($row) {
                     return '<input type="checkbox" class="row-checkbox" value="'.$row->id.'">';
                 })
-                // Format Date & Time
+                // UNBOLDED: Removed font-weight-bold from created_at
                 ->editColumn('created_at', function($row) {
-                    return '<span class="text-nowrap font-weight-bold">' . 
+                    return '<span class="text-nowrap">' . 
                             $row->created_at->format('M d, Y') . ' | ' . 
                             $row->created_at->format('h:i A') . 
                         '</span>';
                 })
-                // Separate Column for COC No
+                // BOLDED: Kept font-weight-bold only for COC No
                 ->addColumn('coc_no', function($row) {
                     return '<span class="text-danger font-weight-bold">' . ($row->coc->coc_no ?? 'N/A') . '</span>';
                 })
                 ->editColumn('agent', function($row) {
                     return '<span class="text-uppercase">' . ($row->agent ?? 'N/A') . '</span>';
                 })
+                // UNBOLDED: Removed font-weight-bold from vehicle.assured
                 ->editColumn('vehicle.assured', function($row) {
-                    return '<span class="text-uppercase font-weight-bold">' . ($row->vehicle->assured ?? 'N/A') . '</span>';
+                    return '<span class="text-uppercase">' . ($row->vehicle->assured ?? 'N/A') . '</span>';
                 })
+                // ACTION BUTTONS: Cleaned up classes for better visibility
                 ->addColumn('action', function($row) {
                     $viewUrl  = route('admin.ctpl.view', $row->transaction_id);
                     $editUrl  = route('admin.ctpl.edit', $row->transaction_id);
@@ -148,17 +150,16 @@ class CtplController extends Controller
                     return '
                     <div class="action-buttons d-flex justify-content-center">
                         <a href="'.$viewUrl.'" class="btn btn-sm text-primary p-1 mx-1" title="View Details">
-                            <i class="fa fa-lg fa-eye"></i>
+                            <i class="fas fa-eye"></i>
                         </a>
                         <a href="'.$editUrl.'" class="btn btn-sm text-warning p-1 mx-1" title="Edit Policy">
-                            <i class="fa fa-lg fa-pen"></i>
+                            <i class="fas fa-edit"></i>
                         </a>
-                        <a href="'.$printUrl.'" class="btn btn-sm text-info p-1 mx-1" title="Print Policy">
-                            <i class="fa fa-lg fa-print"></i>
+                        <a href="'.$printUrl.'" class="btn btn-sm text-primary p-1 mx-1" title="Print Policy">
+                            <i class="fas fa-print"></i>
                         </a>
                     </div>';
                 })
-                // --- UPDATED: Included 'checkbox' in rawColumns ---
                 ->rawColumns(['checkbox', 'created_at', 'agent', 'coc_no', 'vehicle.assured', 'action'])
                 ->make(true);
         }

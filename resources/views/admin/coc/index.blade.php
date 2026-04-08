@@ -2,18 +2,37 @@
 
 @section('title', 'COC Management')
 
+@section('css')
+<style>
+    /* Custom styles for Dark Mode consistency */
+    .card { background-color: #343a40; color: #fff; }
+    .table { color: #fff !important; }
+    .page-link { background-color: #454d55; border-color: #6c757d; color: #fff; }
+    .page-item.disabled .page-link { background-color: #343a40; border-color: #6c757d; }
+    .dataTables_info, .dataTables_length, .dataTables_filter { color: #fff !important; }
+    
+    /* Ensuring modals match the dark theme */
+    .modal-content { background-color: #343a40; color: #fff; }
+    .modal-header { border-bottom: 1px solid #4b545c; }
+    .modal-footer { border-top: 1px solid #4b545c; }
+    .nav-tabs .nav-link.active { background-color: #454d55; color: #fff; border-color: #6c757d; }
+</style>
+@stop
+
 @section('content_header')
-    <div class="row">
-        <div class="col-6"><h1>COC Management</h1></div>
+    <div class="row mb-2">
+        <div class="col-6">
+            <h1 class="text-white">COC Management</h1>
+        </div>
         <div class="col-6 text-right">
-            <x-adminlte-button label="Upload Series" theme="success" icon="fas fa-plus" data-toggle="modal" data-target="#modalAddCoc"/>
-            <x-adminlte-button label="Delete Series" theme="danger" icon="fas fa-trash-alt" data-toggle="modal" data-target="#modalDeleteSeries"/>
+            <x-adminlte-button label="Upload Series" theme="success" icon="fas fa-plus" data-toggle="modal" data-target="#modalAddCoc" class="shadow-sm"/>
+            <x-adminlte-button label="Delete Series" theme="danger" icon="fas fa-trash-alt" data-toggle="modal" data-target="#modalDeleteSeries" class="shadow-sm"/>
         </div>
     </div>
 @stop
 
 @section('content')
-    <div class="card">
+    <div class="card card-outline card-primary shadow">
         <div class="card-body">
             @php 
                 $heads = ['COC Number', 'Type', 'Status', 'Date Created']; 
@@ -30,28 +49,33 @@
                     ],
                     'order' => [[3, 'desc']], 
                     'autoWidth' => false,
+                    /* --- Update Pagination Here --- */
+                    'lengthMenu' => [ [10, 50, 100, 500, 1000], [10, 50, 100, 500, 1000] ],
+                    'pageLength' => 10, // Default rows to display
+                    /* ------------------------------ */
                     'columnDefs' => [
                         [
                             'targets' => [0, 1, 2, 3], 
-                            'className' => 'text-left' 
+                            'className' => 'text-left align-middle' 
                         ]
                     ],
                 ];
             @endphp
 
-            {{-- Note: No @foreach inside here. Server-side handles the data. --}}
-            <x-adminlte-datatable id="table1" :heads="$heads" :config="$config" striped hoverable bordered compressed />
+            {{-- Datatable with Dark theme settings --}}
+            <x-adminlte-datatable id="table1" :heads="$heads" :config="$config" 
+                striped hoverable bordered compressed theme="dark" />
         </div>
     </div>
 
     {{-- Modal Add COC --}}
-    <x-adminlte-modal id="modalAddCoc" title="Upload COC Series" theme="success" size='lg'>
-        <div class="nav-tabs-custom">
-            <ul class="nav nav-tabs">
+    <x-adminlte-modal id="modalAddCoc" title="Upload COC Series" theme="success" size='lg' v-centered static-backdrop>
+        <div class="nav-tabs-custom bg-dark">
+            <ul class="nav nav-tabs border-secondary">
                 <li class="nav-item"><a class="nav-link active" href="#manual" data-toggle="tab">Manual Upload</a></li>
                 <li class="nav-item"><a class="nav-link" href="#csv" data-toggle="tab">CSV Upload</a></li>
             </ul>
-            <div class="tab-content p-3">
+            <div class="tab-content p-3 bg-dark">
                 <div class="tab-pane active" id="manual">
                     <form id="manualAddForm" action="{{ route('admin.coc.seriesUpload') }}" method="POST">
                         @csrf
@@ -59,13 +83,13 @@
                             <x-adminlte-input name="start_no" id="add_start" type="number" label="Start Number" fgroup-class="col-md-4" placeholder="e.g. 1001" required/>
                             <x-adminlte-input name="end_no" id="add_end" type="number" label="End Number" fgroup-class="col-md-4" placeholder="e.g. 1100" required/>
                             <x-adminlte-select name="coc_type" label="COC Type" fgroup-class="col-md-4" required>
-                                <option value="PC">PC</option>
-                                <option value="TC">TC</option>
-                                <option value="MC">MC</option>
-                                <option value="CV">CV</option>
+                                <option value="PC">PC (Private Car)</option>
+                                <option value="TC">TC (Tricycle)</option>
+                                <option value="MC">MC (Motorcycle)</option>
+                                <option value="CV">CV (Commercial)</option>
                             </x-adminlte-select>
                         </div>
-                        <div class="text-right">
+                        <div class="text-right mt-3">
                             <x-adminlte-button type="button" id="btnCheckAdd" label="Check Availability" theme="info" class="mr-2">
                                 <span id="checkSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
                                 <span id="checkText">Check Availability</span>
@@ -79,7 +103,9 @@
                     <form action="{{ route('admin.coc.upload') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <x-adminlte-input-file name="file" label="Upload CSV File" placeholder="Choose a file..." required/>
-                        <x-adminlte-button type="submit" label="Upload CSV" theme="info" class="float-right"/>
+                        <div class="text-right">
+                            <x-adminlte-button type="submit" label="Upload CSV" theme="info"/>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -90,15 +116,15 @@
     </x-adminlte-modal>
 
     {{-- Modal Delete --}}
-    <x-adminlte-modal id="modalDeleteSeries" title="Delete COC Series" theme="danger">
+    <x-adminlte-modal id="modalDeleteSeries" title="Delete COC Series" theme="danger" v-centered static-backdrop>
         <form id="seriesDeleteForm" action="{{ route('admin.coc.seriesDelete') }}" method="POST">
             @csrf
             @method('DELETE')
-            <div class="row">
+            <div class="row p-2">
                 <x-adminlte-input name="start_no" id="del_start" label="Start Number" type="number" fgroup-class="col-md-6" required/>
                 <x-adminlte-input name="end_no" id="del_end" label="End Number" type="number" fgroup-class="col-md-6" required/>
             </div>
-            <div id="seriesPreview" class="alert alert-info d-none">
+            <div id="seriesPreview" class="alert bg-gray-dark border-secondary d-none mx-2">
                 <ul class="mb-0 list-unstyled">
                     <li>Total found: <strong id="totalFound">0</strong></li>
                     <li>Available to delete: <span class="badge badge-success" id="availCount">0</span></li>
@@ -117,11 +143,11 @@
 <script>
     $(document).ready(function() {
         const MAX_LIMIT = 500;
-
-        // Ensure the table reloads if data changes
         const table = $('#table1').DataTable();
 
-        /** 1. AUTO-FOCUS FEATURE **/
+        // Staggered fade-in effect for the main card
+        $('.card').hide().fadeIn(1000);
+
         $('#modalAddCoc').on('shown.bs.modal', function () {
             setTimeout(() => { $('#add_start').trigger('focus'); }, 150);
         });
@@ -140,14 +166,13 @@
             $('#btnSubmitAdd').prop('disabled', true);
         });
 
-        /** 2. ADD COC LOGIC **/
         $('#btnCheckAdd').on('click', function() {
             let startVal = $('#add_start').val();
             let endVal = $('#add_end').val();
 
             if (!/^\d+$/.test(startVal) || !/^\d+$/.test(endVal)) {
                 setValidationUI(false);
-                return Swal.fire('Invalid', 'Digits only please.', 'error');
+                return Swal.fire({ icon: 'error', title: 'Invalid', text: 'Digits only please.', background: '#343a40', color: '#fff' });
             }
 
             let start = parseInt(startVal);
@@ -155,12 +180,12 @@
 
             if (end < start) {
                 setValidationUI(false);
-                return Swal.fire('Invalid Range', 'End must be > Start.', 'error');
+                return Swal.fire({ icon: 'error', title: 'Invalid Range', text: 'End must be > Start.', background: '#343a40', color: '#fff' });
             }
 
             if ((end - start) + 1 > MAX_LIMIT) {
                 setValidationUI(false);
-                return Swal.fire('Limit Exceeded', 'Max ' + MAX_LIMIT + ' allowed.', 'warning');
+                return Swal.fire({ icon: 'warning', title: 'Limit Exceeded', text: 'Max ' + MAX_LIMIT + ' allowed.', background: '#343a40', color: '#fff' });
             }
 
             $('#checkSpinner').removeClass('d-none');
@@ -169,10 +194,10 @@
             $.get("{{ route('admin.coc.previewSeries') }}", {start_no: start, end_no: end}, function(data) {
                 if (parseInt(data.total) > 0) {
                     setValidationUI(false);
-                    Swal.fire('Error', data.total + ' COC already exist.', 'error');
+                    Swal.fire({ icon: 'error', title: 'Error', text: data.total + ' COC already exist.', background: '#343a40', color: '#fff' });
                 } else {
                     setValidationUI(true);
-                    Swal.fire('Available', 'Series is clear.', 'success');
+                    Swal.fire({ icon: 'success', title: 'Available', text: 'Series is clear.', background: '#343a40', color: '#fff' });
                 }
             }).always(function() {
                 $('#checkSpinner').addClass('d-none');
@@ -180,7 +205,6 @@
             });
         });
 
-        /** 3. DELETE RANGE PREVIEW **/
         $('#btnPreviewDelete').on('click', function() {
             let start = $('#del_start').val();
             let end = $('#del_end').val();
@@ -192,7 +216,7 @@
                 $('#seriesPreview').removeClass('d-none');
 
                 if (parseInt(data.used) > 0) {
-                    Swal.fire('Locked', 'Contains "Used" records.', 'error');
+                    Swal.fire({ icon: 'error', title: 'Locked', text: 'Contains "Used" records.', background: '#343a40', color: '#fff' });
                     $('#confirmSeriesDelete').addClass('d-none');
                 } else if (parseInt(data.available) > 0) {
                     $('#confirmSeriesDelete').removeClass('d-none');
@@ -205,7 +229,9 @@
                 title: 'Confirm Delete?',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Yes, delete!'
+                confirmButtonText: 'Yes, delete!',
+                background: '#343a40',
+                color: '#fff'
             }).then((result) => {
                 if (result.isConfirmed) $('#seriesDeleteForm').submit();
             });

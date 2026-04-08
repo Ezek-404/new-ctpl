@@ -3,58 +3,78 @@
 @section('title', 'Saved Transactions')
 
 @section('content_header')
-    <div class="d-flex justify-content-between align-items-center">
-        <h1>Saved Transactions</h1>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h1 class="text-white">Saved Transactions</h1>
         <button id="btnBatchAuthenticate" class="btn btn-success shadow-sm">
             <i class="fas fa-file-csv mr-1"></i> Batch Authenticate (ISAP CSV)
         </button>
     </div>
-    <style>
-        /* Table Header Alignment */
-        #transTable thead th { 
-            vertical-align: middle; 
-            background-color: #f8f9fa; 
-        }
 
-        /* Action button hover effect */
-        .action-buttons .btn {
-            transition: transform 0.2s;
-            padding: 2px 5px;
-        }
-        .action-buttons .btn:hover { transform: scale(1.2); }
+<style>
+    /* Dark Theme Core Adjustments */
+    .card { background-color: #343a40; color: #fff; border: 1px solid #4b545c; }
+    .table { color: #fff !important; }
+    
+    /* Table Header - Keeps headers slightly distinct but not heavy */
+    #transTable thead th { 
+        vertical-align: middle; 
+        background-color: #454d55; 
+        color: #fff;
+        border-bottom: 2px solid #4b545c;
+        font-weight: 600 !important; 
+    }
 
-        /* Prevent stacking and force ellipses (...) */
-        .truncate {
-            max-width: 180px; /* Adjust based on preference */
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    /* GLOBAL UNBOLD - Forces all table cells to normal weight */
+    #transTable tbody td, 
+    #transTable tbody td * {
+        font-weight: 400 !important; /* This targets text and nested elements like spans */
+    }
 
-        /* Keep row height consistent */
-        #transTable td {
-            vertical-align: middle !important;
-            height: 50px; 
-        }
+    /* THE ONLY EXCEPTION - Bold COC Number */
+    #transTable tbody td.coc-red { 
+        font-weight: 700 !important; 
+        color: #ff6b6b !important; 
+    }
 
-        /* Fixed COC Red Style */
-        .coc-red { 
-            font-weight: bold; 
-            color: #d9534f !important; 
-        }
-    </style>
+    /* Keep row height and borders consistent */
+    #transTable td {
+        vertical-align: middle !important;
+        height: 50px; 
+        border-top: 1px solid #4b545c;
+    }
+
+    /* Pagination & Filter visibility */
+    .dataTables_info, .dataTables_length, .dataTables_filter { color: #fff !important; }
+    .page-link { background-color: #454d55; border-color: #6c757d; color: #fff; }
+    
+    .truncate {
+        max-width: 180px; 
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    input[type="checkbox"] {
+        transform: scale(1.1);
+        filter: invert(100%) hue-rotate(180deg) brightness(1.5);
+    }
+    #transTable .action-buttons i {
+        display: inline-block !important;
+        visibility: visible !important;
+    }
+</style>
 @stop
 
 @section('content')
-    <div class="card card-outline card-primary shadow-sm">
+    <div class="card card-outline card-primary shadow">
         <div class="card-body">
             @php
             $heads = [
                 ['label' => '', 'no-export' => true, 'width' => '1%'], 
                 ['label' => 'Date & Time', 'width' => '15%'],
                 ['label' => 'COC No', 'width' => '10%'],
-                ['label' => 'Agent', 'width' => '12%'],      // Separate column
-                ['label' => 'Assured', 'width' => '23%'],    // Separate column
+                ['label' => 'Agent', 'width' => '12%'],
+                ['label' => 'Assured', 'width' => '23%'],
                 ['label' => 'Plate No.', 'width' => '10%'],
                 ['label' => 'Denomination', 'width' => '15%'],
                 ['label' => 'Action', 'no-export' => true, 'width' => '8%']
@@ -67,21 +87,23 @@
                 'columns' => [
                     ['data' => 'checkbox', 'name' => 'checkbox', 'orderable' => false, 'className' => 'text-center'],
                     ['data' => 'created_at', 'name' => 'created_at'],
-                    ['data' => 'coc_no', 'name' => 'coc_no', 'className' => 'coc-red'], 
-                    ['data' => 'agent', 'name' => 'agent', 'className' => 'truncate'], // Ellipsis applied
-                    ['data' => 'vehicle.assured', 'name' => 'vehicle.assured', 'className' => 'truncate font-weight-bold'], // Ellipsis applied
+                    ['data' => 'coc_no', 'name' => 'coc_no', 'className' => 'coc-red'], // Remains bold
+                    ['data' => 'agent', 'name' => 'agent', 'className' => 'truncate'], // Unbolded
+                    ['data' => 'vehicle.assured', 'name' => 'vehicle.assured', 'className' => 'truncate'], // Unbolded (removed font-weight-bold)
                     ['data' => 'vehicle.plate_no', 'name' => 'vehicle.plate_no'],
                     ['data' => 'vehicle.denomination', 'name' => 'vehicle.denomination'],
                     ['data' => 'action', 'name' => 'action', 'orderable' => false, 'className' => 'text-center action-buttons'],
                 ],
                 'order' => [[1, 'desc']],
                 'autoWidth' => false,
+                'lengthMenu' => [ [10, 50, 100, 500, 1000], [10, 50, 100, 500, 1000] ],
+                'pageLength' => 10,
                 'responsive' => true,
             ];
-        @endphp
+            @endphp
 
             <x-adminlte-datatable id="transTable" :heads="$heads" :config="$config" 
-                class="text-nowrap" striped hoverable bordered compressed theme="light" />
+                class="text-nowrap" striped hoverable bordered compressed theme="dark" />
         </div>
     </div>
 @stop
@@ -92,41 +114,41 @@
 $(document).ready(function() {
     var table = $('#transTable').DataTable();
 
-    // Helper function to clean values
+    // Initial animation for the card
+    $('.card').hide().fadeIn(800);
+
     function clean(value, removeAllSpaces = false) {
         if (!value) return '';
-
         let cleaned = value.toString()
-            .replace(/<[^>]*>?/gm, '') // Remove HTML
-            .replace(/,/g, '')         // Remove commas
+            .replace(/<[^>]*>?/gm, '') 
+            .replace(/,/g, '') 
             .trim();
-
         if (removeAllSpaces) {
-            cleaned = cleaned.replace(/\s+/g, ''); // Remove ALL spaces
+            cleaned = cleaned.replace(/\s+/g, ''); 
         }
-
         return cleaned;
     }
 
-    // Inject checkbox into header
     $('#transTable thead th:first-child').html('<input type="checkbox" id="selectAll" style="cursor:pointer;">');
 
-    // Select All Toggle
     $(document).on('click', '#selectAll', function() {
         $('.row-checkbox').prop('checked', this.checked);
     });
 
-    // XLSX Export Logic
     $('#btnBatchAuthenticate').on('click', function() {
         const checked = $('.row-checkbox:checked');
         if (checked.length === 0) {
-            Swal.fire('No Selection', 'Please select rows.', 'info');
+            Swal.fire({
+                icon: 'info',
+                title: 'No Selection',
+                text: 'Please select rows.',
+                background: '#343a40', // Dark mode alert background
+                color: '#fff'
+            });
             return;
         }
 
         let excelData = [];
-
-        // Header rows
         excelData.push(["ISAP","ISAP","","","","","","","","","","",""]);
         excelData.push([
             "COC_NO","PLATE_NO","MV FILE_NO","MOTOR_NO","CHASSIS_NO",
@@ -136,12 +158,9 @@ $(document).ready(function() {
 
         checked.each(function() {
             const rowData = table.row($(this).closest('tr')).data();
-
-            // COC
             let rawCOC = clean(rowData.coc_no, true);
             let formattedCOC = "010" + rawCOC;
 
-            // Date Logic
             let dateStr = clean(rowData.created_at).split('|')[0].trim();
             let inceDateObj = new Date(dateStr);
 
@@ -156,7 +175,6 @@ $(document).ready(function() {
                            (expiDateObj.getDate()+'').padStart(2,'0') + '/' +
                            expiDateObj.getFullYear();
 
-            // MV Type Mapping
             let denom = clean(rowData.vehicle.denomination).toUpperCase();
             let mvType = "";
             let premType = "1";
@@ -175,7 +193,6 @@ $(document).ready(function() {
             else if (mvType === "TK") premType = "3";
             else if (["M","MS","TC","TL"].includes(mvType)) premType = "7";
 
-            // Add row to Excel
             excelData.push([
                 formattedCOC,
                 clean(rowData.vehicle.plate_no, true),
@@ -193,12 +210,9 @@ $(document).ready(function() {
             ]);
         });
 
-        // Create Excel file
         let wb = XLSX.utils.book_new();
         let ws = XLSX.utils.aoa_to_sheet(excelData);
         XLSX.utils.book_append_sheet(wb, ws, "ISAP Upload");
-
-        // Download XLSX
         XLSX.writeFile(wb, "ISAP_Upload.xlsx");
     });
 });

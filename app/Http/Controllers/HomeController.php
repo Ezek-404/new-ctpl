@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CocTable;
+use App\Models\CtplIssuance;
 
 class HomeController extends Controller
 {
@@ -24,11 +25,54 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $pcCount = CocTable::where('coc_type', 'PC')->where('coc_status', 'Available')->count();
-        $tcCount = CocTable::where('coc_type', 'TC')->where('coc_status', 'Available')->count();
-        $mcCount = CocTable::where('coc_type', 'MC')->where('coc_status', 'Available')->count();
-        $cvCount = CocTable::where('coc_type', 'CV')->where('coc_status', 'Available')->count();
+        // Inventory Counts for Top Cards (Available)
+        $availPC = CocTable::where('coc_type', 'PC')->where('coc_status', 'Available')->count();
+        $availTC = CocTable::where('coc_type', 'TC')->where('coc_status', 'Available')->count();
+        $availMC = CocTable::where('coc_type', 'MC')->where('coc_status', 'Available')->count();
+        $availCV = CocTable::where('coc_type', 'CV')->where('coc_status', 'Available')->count();
 
-        return view('home', compact('pcCount', 'tcCount', 'mcCount', 'cvCount'));
+        $currentYear = now()->year;
+        // Prepare arrays for Jan to April
+        $months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        $pcData = []; $mcData = []; $tcData = []; $cvData = [];
+
+        // Loop through months 1 to 4 (Jan to Apr)
+        for ($m = 1; $m <= 12; $m++) {
+            // PC Insured
+           $pcData[] = CtplIssuance::whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $m)
+            ->whereHas('vehicle', fn($q) => $q->whereIn('denomination', ['Car', 'SUV', 'Sedan', 'Utility Vehicle', 'Hatchback', 'Coupe', 'Passenger Car']))
+            ->count();
+
+            // MC Insured
+            $mcData[] = CtplIssuance::whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $m)
+                ->whereHas('vehicle', fn($q) => $q->whereIn('denomination', ['MC', 'MTC']))
+                ->count();
+
+            // TC Insured
+            $tcData[] = CtplIssuance::whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $m)
+                ->whereHas('vehicle', fn($q) => $q->where('denomination', 'Tricycle'))
+                ->count();
+
+            // CV Insured
+            $cvData[] = CtplIssuance::whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $m)
+                ->whereHas('vehicle', fn($q) => $q->whereIn('denomination', ['Truck', 'Trailer']))
+                ->count();
+        }
+
+        // Totals for the footer report
+        $pcInsured = array_sum($pcData);
+        $mcInsured = array_sum($mcData);
+        $tcInsured = array_sum($tcData);
+        $cvInsured = array_sum($cvData);
+
+        return view('home', compact(
+            'availPC', 'availTC', 'availMC', 'availCV',
+            'months', 'pcData', 'mcData', 'tcData', 'cvData',
+            'pcInsured', 'mcInsured', 'tcInsured', 'cvInsured'
+        ));
     }
 }
