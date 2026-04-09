@@ -119,29 +119,49 @@ class CtplController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                // --- Checkbox Column ---
                 ->addColumn('checkbox', function($row) {
                     return '<input type="checkbox" class="row-checkbox" value="'.$row->id.'">';
                 })
-                // UNBOLDED: Removed font-weight-bold from created_at
                 ->editColumn('created_at', function($row) {
                     return '<span class="text-nowrap">' . 
                             $row->created_at->format('M d, Y') . ' | ' . 
                             $row->created_at->format('h:i A') . 
                         '</span>';
                 })
-                // BOLDED: Kept font-weight-bold only for COC No
                 ->addColumn('coc_no', function($row) {
                     return '<span class="text-danger font-weight-bold">' . ($row->coc->coc_no ?? 'N/A') . '</span>';
                 })
+                // UPDATED: Detects type for Ribbon, then cleans the name
                 ->editColumn('agent', function($row) {
-                    return '<span class="text-uppercase">' . ($row->agent ?? 'N/A') . '</span>';
+                    $agent = $row->agent ?? 'N/A';
+                    $ribbon = '';
+
+                    // 1. Determine Ribbon Type
+                    if (stripos($agent, 'W/SMOKE') !== false || stripos($agent, 'W/ SMOKE') !== false) {
+                        // Use Info color for Smoke variants
+                        $ribbon = '<div class="ribbon-wrapper ribbon-xs"><div class="ribbon bg-info text-xs">SMOKE</div></div>';
+                    } elseif (stripos($agent, 'TPL') !== false || stripos($agent, 'PAUL') !== false) {
+                        // Use Warning (Orange/Yellow) for TPL and Paul
+                        $ribbon = '<div class="ribbon-wrapper ribbon-xs"><div class="ribbon bg-warning text-xs">TPL</div></div>';
+                    } elseif (stripos($agent, 'NA') !== false) {
+                        // Use Success (Green) for NA
+                        $ribbon = '<div class="ribbon-wrapper ribbon-xs"><div class="ribbon bg-success text-xs">NA</div></div>';
+                    }
+
+                    // 2. Clean the string for display
+                    $unwanted = [' NA', ' TPL', ' W/SMOKE', ' W/ SMOKE'];
+                    $cleanAgent = trim(preg_replace('/\s#\d+/', '', str_ireplace($unwanted, '', $agent)));
+
+                    // 3. Return with Relative Container
+                    return '
+                        <div class="position-relative p-2" style="min-height: 45px;">
+                            ' . $ribbon . '
+                            <span class="text-uppercase">' . $cleanAgent . '</span>
+                        </div>';
                 })
-                // UNBOLDED: Removed font-weight-bold from vehicle.assured
                 ->editColumn('vehicle.assured', function($row) {
                     return '<span class="text-uppercase">' . ($row->vehicle->assured ?? 'N/A') . '</span>';
                 })
-                // ACTION BUTTONS: Cleaned up classes for better visibility
                 ->addColumn('action', function($row) {
                     $viewUrl  = route('admin.ctpl.view', $row->transaction_id);
                     $editUrl  = route('admin.ctpl.edit', $row->transaction_id);
@@ -149,15 +169,9 @@ class CtplController extends Controller
 
                     return '
                     <div class="action-buttons d-flex justify-content-center">
-                        <a href="'.$viewUrl.'" class="btn btn-sm text-primary p-1 mx-1" title="View Details">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                        <a href="'.$editUrl.'" class="btn btn-sm text-warning p-1 mx-1" title="Edit Policy">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <a href="'.$printUrl.'" class="btn btn-sm text-primary p-1 mx-1" title="Print Policy">
-                            <i class="fas fa-print"></i>
-                        </a>
+                        <a href="'.$viewUrl.'" class="btn btn-sm text-primary p-1 mx-1" title="View Details"><i class="fas fa-eye"></i></a>
+                        <a href="'.$editUrl.'" class="btn btn-sm text-warning p-1 mx-1" title="Edit Policy"><i class="fas fa-edit"></i></a>
+                        <a href="'.$printUrl.'" class="btn btn-sm text-primary p-1 mx-1" title="Print Policy"><i class="fas fa-print"></i></a>
                     </div>';
                 })
                 ->rawColumns(['checkbox', 'created_at', 'agent', 'coc_no', 'vehicle.assured', 'action'])

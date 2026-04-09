@@ -15,35 +15,51 @@
     .card { background-color: #343a40; color: #fff; border: 1px solid #4b545c; }
     .table { color: #fff !important; }
     
-    /* Table Header - Keeps headers slightly distinct but not heavy */
+    .card-body { 
+        padding: 1rem; 
+        overflow: hidden; 
+    }
+
+    /* Table Header - Sticky Fix for internal scroll */
     #transTable thead th { 
         vertical-align: middle; 
-        background-color: #454d55; 
+        background-color: #454d55 !important; 
         color: #fff;
         border-bottom: 2px solid #4b545c;
         font-weight: 600 !important; 
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
 
-    /* GLOBAL UNBOLD - Forces all table cells to normal weight */
+    /* FIX: Ensure the header checkbox is visible and styled correctly */
+    #transTable thead th input[type="checkbox"] {
+        cursor: pointer;
+        z-index: 20;
+        position: relative;
+    }
+
+    /* Global unbold for cells, bold only for COC numbers */
     #transTable tbody td, 
-    #transTable tbody td * {
-        font-weight: 400 !important; /* This targets text and nested elements like spans */
-    }
+    #transTable tbody td span:not(.coc-red) { font-weight: 400 !important; }
 
-    /* THE ONLY EXCEPTION - Bold COC Number */
-    #transTable tbody td.coc-red { 
+    .coc-red { 
         font-weight: 700 !important; 
         color: #ff6b6b !important; 
     }
 
-    /* Keep row height and borders consistent */
+    #transTable .action-buttons i {
+        font-weight: 900 !important;
+        display: inline-block !important;
+        visibility: visible !important;
+    }
+
     #transTable td {
         vertical-align: middle !important;
         height: 50px; 
         border-top: 1px solid #4b545c;
     }
 
-    /* Pagination & Filter visibility */
     .dataTables_info, .dataTables_length, .dataTables_filter { color: #fff !important; }
     .page-link { background-color: #454d55; border-color: #6c757d; color: #fff; }
     
@@ -58,10 +74,18 @@
         transform: scale(1.1);
         filter: invert(100%) hue-rotate(180deg) brightness(1.5);
     }
-    #transTable .action-buttons i {
-        display: inline-block !important;
-        visibility: visible !important;
+
+    .dataTables_scrollHead th:first-child input[type="checkbox"] {
+        margin: 0 auto;
+        display: block;
+        transform: scale(1.2);
+        filter: invert(100%) hue-rotate(180deg) brightness(1.5);
     }
+
+    .dataTables_scrollHeadInner {
+        width: 100% !important;
+    }
+    
 </style>
 @stop
 
@@ -70,6 +94,7 @@
         <div class="card-body">
             @php
             $heads = [
+                // FIX: Add the "Select All" checkbox HTML into the label
                 ['label' => '', 'no-export' => true, 'width' => '1%'], 
                 ['label' => 'Date & Time', 'width' => '15%'],
                 ['label' => 'COC No', 'width' => '10%'],
@@ -87,9 +112,9 @@
                 'columns' => [
                     ['data' => 'checkbox', 'name' => 'checkbox', 'orderable' => false, 'className' => 'text-center'],
                     ['data' => 'created_at', 'name' => 'created_at'],
-                    ['data' => 'coc_no', 'name' => 'coc_no', 'className' => 'coc-red'], // Remains bold
-                    ['data' => 'agent', 'name' => 'agent', 'className' => 'truncate'], // Unbolded
-                    ['data' => 'vehicle.assured', 'name' => 'vehicle.assured', 'className' => 'truncate'], // Unbolded (removed font-weight-bold)
+                    ['data' => 'coc_no', 'name' => 'coc_no', 'className' => 'coc-red'],
+                    ['data' => 'agent', 'name' => 'agent', 'className' => 'truncate'],
+                    ['data' => 'vehicle.assured', 'name' => 'vehicle.assured', 'className' => 'truncate'],
                     ['data' => 'vehicle.plate_no', 'name' => 'vehicle.plate_no'],
                     ['data' => 'vehicle.denomination', 'name' => 'vehicle.denomination'],
                     ['data' => 'action', 'name' => 'action', 'orderable' => false, 'className' => 'text-center action-buttons'],
@@ -98,7 +123,10 @@
                 'autoWidth' => false,
                 'lengthMenu' => [ [10, 50, 100, 500, 1000], [10, 50, 100, 500, 1000] ],
                 'pageLength' => 10,
-                'responsive' => true,
+                'responsive' => false, 
+                'scrollX' => true,     
+                'scrollY' => '55vh',   
+                'scrollCollapse' => true,
             ];
             @endphp
 
@@ -112,11 +140,22 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 <script>
 $(document).ready(function() {
+    // 1. Initialize Table Reference
     var table = $('#transTable').DataTable();
 
-    // Initial animation for the card
+    /**
+     * SCROLL FIX: Injects the "Select All" checkbox into the correct header.
+     * When scrollY is enabled, DataTables creates a separate div for the header.
+     * This listener ensures the checkbox is re-inserted every time the table redraws.
+     **/
+    table.on('draw', function() {
+        $('.dataTables_scrollHead th:first-child').html('<input type="checkbox" id="selectAll" style="cursor:pointer;">');
+    });
+
+    // 2. Initial animation for the card
     $('.card').hide().fadeIn(800);
 
+    // 3. Helper function to clean data for Excel
     function clean(value, removeAllSpaces = false) {
         if (!value) return '';
         let cleaned = value.toString()
@@ -129,45 +168,69 @@ $(document).ready(function() {
         return cleaned;
     }
 
-    $('#transTable thead th:first-child').html('<input type="checkbox" id="selectAll" style="cursor:pointer;">');
-
+    /**
+     * SELECT ALL LOGIC 
+     * Uses delegated events so it works even after the header is redrawn.
+     **/
     $(document).on('click', '#selectAll', function() {
-        $('.row-checkbox').prop('checked', this.checked);
+        // Find all checkboxes in the current view/filtered result
+        var rows = table.rows({ 'search': 'applied' }).nodes();
+        $('input.row-checkbox', rows).prop('checked', this.checked);
     });
 
+    // Update "Select All" status if a single row is unchecked
+    $(document).on('change', '.row-checkbox', function() {
+        if (!this.checked) {
+            $('#selectAll').prop('checked', false);
+        } else {
+            // If all checkboxes are checked, check the selectAll box
+            var total = $('.row-checkbox').length;
+            var checked = $('.row-checkbox:checked').length;
+            if(total === checked) {
+                $('#selectAll').prop('checked', true);
+            }
+        }
+    });
+
+    // 4. Batch Authenticate Logic
     $('#btnBatchAuthenticate').on('click', function() {
-        const checked = $('.row-checkbox:checked');
+        // Targets all checked row-checkboxes in the table body
+        const checked = $('#transTable tbody .row-checkbox:checked');
+        
         if (checked.length === 0) {
             Swal.fire({
                 icon: 'info',
                 title: 'No Selection',
-                text: 'Please select rows.',
-                background: '#343a40', // Dark mode alert background
+                text: 'Please select rows to generate the ISAP CSV.',
+                background: '#343a40',
                 color: '#fff'
             });
             return;
         }
 
-        let excelData = [];
-        excelData.push(["ISAP","ISAP","","","","","","","","","","",""]);
-        excelData.push([
-            "COC_NO","PLATE_NO","MV FILE_NO","MOTOR_NO","CHASSIS_NO",
-            "INCE_DATE","EXPI_DATE","PREM_TYPE","REG_TYPE","TAX_TYPE",
-            "ASSURED NAME","ASSURED TIN","MV_TYPE"
-        ]);
+        let excelData = [
+            ["ISAP","ISAP","","","","","","","","","","",""],
+            ["COC_NO","PLATE_NO","MV FILE_NO","MOTOR_NO","CHASSIS_NO","INCE_DATE","EXPI_DATE","PREM_TYPE","REG_TYPE","TAX_TYPE","ASSURED NAME","ASSURED TIN","MV_TYPE"]
+        ];
 
         checked.each(function() {
             const rowData = table.row($(this).closest('tr')).data();
+            if (!rowData) return;
+            
+            // Format COC (Example: Adding prefix 010)
             let rawCOC = clean(rowData.coc_no, true);
             let formattedCOC = "010" + rawCOC;
 
+            // Date Formatting Logic
             let dateStr = clean(rowData.created_at).split('|')[0].trim();
             let inceDateObj = new Date(dateStr);
-
+            
+            // Format: MM/DD/YYYY
             let inceDate = ((inceDateObj.getMonth()+1)+'').padStart(2,'0') + '/' +
                            (inceDateObj.getDate()+'').padStart(2,'0') + '/' +
                            inceDateObj.getFullYear();
 
+            // Set Expiry to +1 Year
             let expiDateObj = new Date(inceDateObj);
             expiDateObj.setFullYear(expiDateObj.getFullYear() + 1);
 
@@ -175,6 +238,7 @@ $(document).ready(function() {
                            (expiDateObj.getDate()+'').padStart(2,'0') + '/' +
                            expiDateObj.getFullYear();
 
+            // Vehicle Denomination Mapping
             let denom = clean(rowData.vehicle.denomination).toUpperCase();
             let mvType = "";
             let premType = "1";
@@ -189,6 +253,7 @@ $(document).ready(function() {
             else if (denom === "TRAILER") mvType = "TL";
             else mvType = denom;
 
+            // Premium Type Logic
             if (mvType === "C" || mvType === "SV" || mvType === "UV") premType = "1";
             else if (mvType === "TK") premType = "3";
             else if (["M","MS","TC","TL"].includes(mvType)) premType = "7";
@@ -202,18 +267,19 @@ $(document).ready(function() {
                 inceDate,
                 expiDate,
                 premType,
-                "R",
-                "0",
+                "R", // Reg Type
+                "0", // Tax Type
                 clean(rowData.vehicle.assured),
-                "111-111-111-11111",
+                "111-111-111-11111", // Default TIN
                 mvType
             ]);
         });
 
+        // 5. Generate and Download Excel
         let wb = XLSX.utils.book_new();
         let ws = XLSX.utils.aoa_to_sheet(excelData);
         XLSX.utils.book_append_sheet(wb, ws, "ISAP Upload");
-        XLSX.writeFile(wb, "ISAP_Upload.xlsx");
+        XLSX.writeFile(wb, "ISAP_Upload_" + new Date().getTime() + ".xlsx");
     });
 });
 </script>

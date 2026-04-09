@@ -3,116 +3,135 @@
 @section('title', 'Vehicle Details')
 
 @section('content_header')
-    <div class="d-flex justify-content-between align-items-center">
-        <h1 class="font-weight-bold text-dark">Vehicle & Policy Details</h1>
-        <a href="{{ route('admin.saved_transactions') }}" class="btn btn-outline-secondary shadow-sm">
-            <i class="fas fa-angle-left mr-1"></i> Back to List
-        </a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="font-weight-bold text-light mb-0">Vehicle & Policy Details</h1>
+        </div>
+        <div class="btn-group shadow-sm">
+            <a href="{{ route('admin.saved_transactions') }}" class="btn btn-outline-light btn-sm px-3">
+                <i class="fas fa-arrow-left mr-1"></i> Back to List
+            </a>
+            <a href="{{ route('admin.ctpl.edit', $issuance->transaction_id) }}" class="btn btn-warning btn-sm px-3 text-dark font-weight-bold">
+                <i class="fas fa-edit mr-1"></i> Quick Edit
+            </a>
+        </div>
     </div>
 @stop
 
 @section('content')
-<div class="row">
-    {{-- Left Column: Policy & Owner Information --}}
-    <div class="col-md-5">
-        <div class="card card-outline card-primary shadow-sm">
-            <div class="card-header bg-white border-bottom-0 pt-3">
-                <h3 class="card-title font-weight-bold text-muted small text-uppercase">
-                    <i class="fas fa-file-invoice mr-2"></i> Policy & Owner Information
-                </h3>
-            </div>
-            <div class="card-body pt-0">
-                {{-- COC Header --}}
-                <div class="text-center mb-4 p-3 bg-light rounded border-dashed">
-                    <div class="text-xs text-uppercase text-muted font-weight-bold mb-1">Certificate of Cover No.</div>
-                    <h2 class="text-danger font-weight-bold mb-0" style="letter-spacing: 2px;">
-                        {{ $issuance->coc->coc_no ?? 'N/A' }}
-                    </h2>
-                    <div class="text-xs text-primary font-weight-bold mt-2">
-                        POLICY NO: <span class="text-dark">{{ $issuance->policy_no ?? 'PENDING' }}</span>
+<div class="dark-mode container-fluid">
+    <div class="row">
+        {{-- Left Column: Policy & Owner Information --}}
+        <div class="col-md-6">
+            <div class="card card-outline card-primary shadow bg-dark h-100">
+                <div class="card-header border-bottom-0 pt-3">
+                    <h3 class="card-title font-weight-bold text-muted small text-uppercase">
+                        <i class="fas fa-file-invoice mr-2 text-primary"></i> Policy & Owner Information
+                    </h3>
+                </div>
+                <div class="card-body px-4 d-flex flex-column">
+                    <div class="text-center mb-4 p-4 coc-box-dark rounded shadow-sm">
+                        <div class="text-xs text-uppercase text-muted font-weight-bold mb-1">Certificate of Cover No.</div>
+                        <h2 class="text-danger display-4 font-weight-bold mb-0">{{ $issuance->coc->coc_no ?? 'N/A' }}</h2>
+                        <div class="policy-pill mt-3">
+                            <span class="text-muted small mr-2">POLICY:</span>
+                            <span class="font-weight-bold text-light">{{ $issuance->policy_no ?? 'PENDING' }}</span>
+                        </div>
                     </div>
-                </div>
 
-                {{-- Information Fields --}}
-                <div class="info-group mb-3">
-                    <label class="info-label">Assured Name</label>
-                    <div class="info-value text-primary">{{ $issuance->vehicle->assured }}</div>
-                </div>
-                
-                <div class="info-group mb-3">
-                    <label class="info-label">Address</label>
-                    <div class="info-value text-muted text-sm">{{ $issuance->vehicle->address ?? 'NO ADDRESS ON RECORD' }}</div>
-                </div>
-
-                <div class="row mt-4">
-                    <div class="col-6">
-                        <label class="info-label">Agent / Branch</label>
-                        <div class="text-dark font-weight-bold">{{ $issuance->agent }}</div>
+                    <div class="detail-group mb-4 pl-3 border-left-primary">
+                        <label class="info-label text-primary">Assured Name</label>
+                        <div class="info-value h5 font-weight-bold mb-0">{{ $issuance->vehicle->assured }}</div>
                     </div>
-                    <div class="col-6 text-right">
-                        <label class="info-label">Transaction ID</label>
-                        <div class="text-dark font-weight-bold">#{{ $issuance->transaction_id }}</div>
+                    
+                    <div class="detail-group mb-4 pl-3 border-left-muted">
+                        <label class="info-label text-primary">Primary Address</label>
+                        <p class="text-muted mb-0 h6">{{ $issuance->vehicle->address ?? 'No address provided' }}</p>
                     </div>
-                </div>
 
-                <div class="border-top mt-4 pt-3 text-center">
-                    <div class="text-xs text-muted text-uppercase mb-2">Issuance Date: {{ $issuance->created_at->format('M d, Y | h:i A') }}</div>
-                    <a href="{{ route('admin.ctpl.print', $issuance->transaction_id) }}" class="btn btn-info btn-block shadow-sm py-2">
-                        <i class="fas fa-print mr-2"></i> <strong>PRINT POLICY CERTIFICATE</strong>
-                    </a>
+                    <div class="row py-3 bg-soft-dark rounded mx-0 mb-4">
+                        <div class="col-6 border-right border-secondary">
+                            <label class="info-label mb-0 text-primary">Issuing Agent</label>
+                            <div class="font-weight-bold text-light h6">{{ $issuance->agent }}</div>
+                        </div>
+                        <div class="col-6">
+                            <label class="info-label mb-0 text-primary">Date Issued</label>
+                            <div class="font-weight-bold text-light h6">{{ $issuance->created_at->format('M d, Y') }}</div>
+                        </div>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{{ route('admin.ctpl.print', $issuance->transaction_id) }}" class="btn btn-primary btn-block py-3 font-weight-bold">
+                            <i class="fas fa-print mr-2"></i> GENERATE PRINTABLE PDF
+                        </a>
+                    </div>
+
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- Right Column: Technical Specifications --}}
-    <div class="col-md-7">
-        <div class="card card-outline card-dark shadow-sm">
-            <div class="card-header bg-white">
-                <h3 class="card-title font-weight-bold text-muted small text-uppercase">
-                    <i class="fas fa-car mr-2"></i> Technical Specifications
-                </h3>
-            </div>
-            <div class="card-body p-0">
-                <table class="table mb-0">
-                    <tbody>
-                        <tr>
-                            <th class="spec-label">Plate Number</th>
-                            <td class="spec-value text-primary font-weight-bold">{{ $issuance->vehicle->plate_no ?? 'NO PLATE' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="spec-label">MV File Number</th>
-                            <td class="spec-value">{{ $issuance->vehicle->file_no ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="spec-label">Make & Series</th>
-                            <td class="spec-value text-uppercase">{{ ($issuance->vehicle->make ?? 'N/A') . ' ' . ($issuance->vehicle->series ?? '') }}</td>
-                        </tr>
-                        <tr>
-                            <th class="spec-label">Color</th>
-                            <td class="spec-value text-uppercase">{{ $issuance->vehicle->color ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="spec-label">Engine Number</th>
-                            <td class="spec-value text-monospace-large">{{ $issuance->vehicle->engine_no ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="spec-label">Chassis Number</th>
-                            <td class="spec-value text-monospace-large">{{ $issuance->vehicle->chassis_no ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="spec-label">Denomination</th>
-                            <td class="spec-value text-uppercase">
-                                    {{ $issuance->vehicle->denomination ?? 'N/A' }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="card-footer bg-white border-top-0 pt-0 pb-4 pr-4">
-                <a href="{{ route('admin.ctpl.edit', $issuance->transaction_id) }}" class="btn btn-warning shadow-sm px-4 font-weight-bold">
-                    <i class="fas fa-pen mr-2"></i> EDIT DETAILS
-                </a>
+        {{-- Right Column: Technical Specifications (Applied Policy Design) --}}
+        <div class="col-md-6">
+            <div class="card card-outline card-info shadow bg-dark h-100">
+                <div class="card-header border-bottom-0 pt-3">
+                    <h3 class="card-title font-weight-bold text-muted small text-uppercase">
+                        <i class="fas fa-microchip mr-2 text-info"></i> Vehicle Specifications
+                    </h3>
+                </div>
+                <div class="card-body px-4 d-flex flex-column">
+                    {{-- Plate Number Styled like Assured Name --}}
+                    <div class="detail-group mb-4 pl-3 border-left-info">
+                        <label class="info-label text-info">Plate Number</label>
+                        <div class="info-value h5 font-weight-bold mb-0">
+                            {{ $issuance->vehicle->plate_no ?? 'NO PLATE' }}
+                        </div>
+                    </div>
+
+                    {{-- MV File Number --}}
+                    <div class="detail-group mb-4 pl-3 border-left-muted">
+                        <label class="info-label text-info">MV File Number</label>
+                        <div class="font-weight-bold text-monospace-spec">
+                            {{ $issuance->vehicle->file_no ?? 'N/A' }}
+                        </div>
+                    </div>
+
+                    {{-- Denomination --}}
+                    <div class="detail-group mb-4 pl-3 border-left-muted">
+                        <label class="info-label text-info">Body Type</label>
+                        <div class="font-weight-bold text-monospace-spec">
+                            {{ $issuance->vehicle->denomination ?? 'N/A' }}
+                        </div>
+                    </div>
+
+                    {{-- Brand / Make --}}
+                    <div class="detail-group mb-4 pl-3 border-left-muted">
+                        <label class="info-label text-info">Model & Manufacturer</label>
+                        <div class="font-weight-bold text-monospace-spec">
+                            {{ $issuance->vehicle->year_model ?? 'N/A' }} {{ $issuance->vehicle->make ?? 'N/A' }} {{ $issuance->vehicle->series ?? 'N/A' }}
+                        </div>
+                    </div>
+
+                    {{-- Engine & Chassis Numbers with Monospace --}}
+                    <div class="row mb-4">
+                        <div class="col-12 mb-4">
+                            <div class="pl-3 border-left-muted">
+                                <label class="info-label text-info">Engine Number</label>
+                                <div class="font-weight-bold text-monospace-spec h5">{{ $issuance->vehicle->engine_no ?? 'N/A' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="pl-3 border-left-muted">
+                                <label class="info-label text-info">Chassis Number</label>
+                                <div class="font-weight-bold text-monospace-spec h5">{{ $issuance->vehicle->chassis_no ?? 'N/A' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-auto">
+                        <div class="btn btn-secondary btn-block py-3 font-weight-bold disabled shadow-sm border-dashed-light">
+                            <i class="fas fa-calendar-check mr-2"></i> 
+                            DATE ADDED: {{ $issuance->created_at->format('M d, Y | h:i A') }}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -121,59 +140,42 @@
 
 @section('css')
 <style>
-    /* Global Overrides */
-    .border-dashed { border: 1px dashed #dee2e6 !important; }
+    /* Global Hierarchy & Indicators */
+    .border-left-primary { border-left: 3px solid #007bff; }
+    .border-left-info { border-left: 3px solid #17a2b8; }
+    .border-left-muted { border-left: 3px solid #444; }
+    .border-dashed { border-style: dashed !important; }
+
+    /* Layout Alignment: Ensures both cards maintain identical height and button placement */
+    .card { border-radius: 0.75rem; }
+    .card-body.d-flex.flex-column { min-height: 520px; } 
+
+    /* Policy Header Logic */
+    .coc-box-dark { background: rgba(255,255,255, 0.03); border: 1px solid rgba(255,255,255,0.05); }
+    .policy-pill { display: inline-block; padding: 4px 16px; background: rgba(0,0,0,0.2); border-radius: 20px; border: 1px solid #333; }
     
-    /* Policy Section Styling */
-    .info-label { 
-        display: block;
+    /* Text Styles */
+    .info-label { font-size: 0.65rem; text-transform: uppercase; color: #666; font-weight: 800; letter-spacing: 0.8px; display: block; margin-bottom: 2px; }
+    .bg-soft-dark { background: rgba(0,0,0,0.15); }
+    .text-monospace-spec { font-family: 'Courier New', Courier, monospace; letter-spacing: 1.5px; }
+
+    /* Footer Button Styling: Specifically for the "Date Added" section */
+    .border-dashed-light { 
+        border: 1px dashed rgba(255,255,255,0.2) !important;
+        background-color: rgba(255,255,255,0.02) !important;
+        opacity: 1 !important;
+        cursor: default;
+        color: #adb5bd !important;
+    }
+
+    /* Badges */
+    .badge-outline-secondary { 
+        border: 1px solid #555; 
+        background: transparent; 
+        color: #888; 
+        padding: 4px 10px; 
+        font-weight: normal;
         font-size: 0.7rem; 
-        text-transform: uppercase; 
-        color: #999; 
-        font-weight: bold;
-        margin-bottom: 2px;
-        letter-spacing: 0.5px;
     }
-    .info-value { 
-        font-size: 1.1rem; 
-        font-weight: 700; 
-        border-bottom: 1px solid #f0f0f0;
-        padding-bottom: 4px;
-        text-transform: uppercase;
-    }
-
-    /* Technical Specification Table Styling */
-    .spec-label {
-        width: 35%;
-        background-color: #f8f9fa;
-        color: #495057;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        vertical-align: middle !important;
-        padding: 1.25rem 1.25rem !important;
-        border-right: 1px solid #eee;
-    }
-
-    .spec-value {
-        font-size: 1.25rem; /* Increased for better visibility */
-        vertical-align: middle !important;
-        padding-left: 1.5rem !important;
-        color: #212529;
-    }
-
-    /* Monospace for numbers */
-    .text-monospace-large {
-        font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
-        font-weight: 800;
-        font-size: 1.3rem;
-        letter-spacing: 1.5px;
-        color: #000;
-    }
-
-    /* Action Buttons */
-    .btn-info { background-color: #17a2b8; border: none; }
-    .btn-warning { background-color: #ffc107; border: none; font-size: 0.9rem; }
 </style>
 @stop
