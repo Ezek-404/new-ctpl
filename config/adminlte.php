@@ -329,7 +329,7 @@ return [
             'text' => 'Saved Transactions',
             'url'  => 'saved-transactions',
             'icon' => 'fas fa-fw fa-th',
-            'active' => ['saved-transactions*'],
+            'active' => ['admin/saved-transactions*'],
         ],
         
         //'ARCHIVE',

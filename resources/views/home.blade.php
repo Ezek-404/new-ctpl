@@ -101,25 +101,25 @@
                         <div class="col-sm-3 col-6">
                             <div class="description-block border-right">
                                 <h5 class="description-header text-primary count-me">{{ $pcInsured }}</h5>
-                                <span class="description-text">PC YTD INSURED</span>
+                                <span class="description-text">TOTAL PC ISSUED</span>
                             </div>
                         </div>
                         <div class="col-sm-3 col-6">
                             <div class="description-block border-right">
                                 <h5 class="description-header text-warning count-me">{{ $tcInsured }}</h5>
-                                <span class="description-text">TC YTD INSURED</span>
+                                <span class="description-text">TOTAL TC ISSUED</span>
                             </div>
                         </div>
                         <div class="col-sm-3 col-6">
                             <div class="description-block border-right">
                                 <h5 class="description-header text-info count-me">{{ $mcInsured }}</h5>
-                                <span class="description-text">MC YTD INSURED</span>
+                                <span class="description-text">TOTAL MC ISSUED</span>
                             </div>
                         </div>
                         <div class="col-sm-3 col-6">
                             <div class="description-block">
                                 <h5 class="description-header text-success count-me">{{ $cvInsured }}</h5>
-                                <span class="description-text">CV YTD INSURED</span>
+                                <span class="description-text">TOTAL CV ISSUED</span>
                             </div>
                         </div>
                     </div>

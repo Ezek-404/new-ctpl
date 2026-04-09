@@ -96,12 +96,12 @@
             $heads = [
                 // FIX: Add the "Select All" checkbox HTML into the label
                 ['label' => '', 'no-export' => true, 'width' => '1%'], 
-                ['label' => 'Date & Time', 'width' => '15%'],
-                ['label' => 'COC No', 'width' => '10%'],
                 ['label' => 'Agent', 'width' => '12%'],
                 ['label' => 'Assured', 'width' => '23%'],
+                ['label' => 'COC No', 'width' => '10%'],
                 ['label' => 'Plate No.', 'width' => '10%'],
                 ['label' => 'Denomination', 'width' => '15%'],
+                ['label' => 'Date & Time', 'width' => '15%'],
                 ['label' => 'Action', 'no-export' => true, 'width' => '8%']
             ];
 
@@ -111,15 +111,15 @@
                 'ajax' => route('admin.saved_transactions'),
                 'columns' => [
                     ['data' => 'checkbox', 'name' => 'checkbox', 'orderable' => false, 'className' => 'text-center'],
-                    ['data' => 'created_at', 'name' => 'created_at'],
-                    ['data' => 'coc_no', 'name' => 'coc_no', 'className' => 'coc-red'],
                     ['data' => 'agent', 'name' => 'agent', 'className' => 'truncate'],
                     ['data' => 'vehicle.assured', 'name' => 'vehicle.assured', 'className' => 'truncate'],
+                    ['data' => 'coc_no', 'name' => 'coc_no', 'className' => 'coc-red'],
                     ['data' => 'vehicle.plate_no', 'name' => 'vehicle.plate_no'],
                     ['data' => 'vehicle.denomination', 'name' => 'vehicle.denomination'],
+                    ['data' => 'created_at', 'name' => 'created_at'],
                     ['data' => 'action', 'name' => 'action', 'orderable' => false, 'className' => 'text-center action-buttons'],
                 ],
-                'order' => [[1, 'desc']],
+                'order' => [[6, 'desc']],
                 'autoWidth' => false,
                 'lengthMenu' => [ [10, 50, 100, 500, 1000], [10, 50, 100, 500, 1000] ],
                 'pageLength' => 10,

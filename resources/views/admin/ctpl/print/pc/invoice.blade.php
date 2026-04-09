@@ -1,10 +1,12 @@
 <style>
-    /* 1. SHARED BASE STYLES */
+    /* 1. SHARED BASE STYLES & DARK THEME OVERRIDES */
     .invoice-container {
         display: flex;
         justify-content: center;
-        background-color: #f4f6f9;
+        /* Matches your dark dashboard background */
+        background-color: #343a40; 
         padding: 40px 0;
+        border-radius: 0 0 .25rem .25rem;
     }
 
     .invoice-wrapper {
@@ -12,7 +14,8 @@
         position: relative;
         font-family: "Times New Roman", Times, serif !important;
         text-transform: uppercase;
-        box-shadow: 0 0 20px rgba(0,0,0,0.15);
+        /* Enhanced shadow for dark theme visibility */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
     .field { 
@@ -23,7 +26,7 @@
         z-index: 10;
     }
 
-    /* 2. DASHBOARD VIEW */
+    /* 2. DASHBOARD VIEW (ON SCREEN) */
     @media screen {
         .invoice-wrapper {
             background-image: url('/images/invoice.jpg'); 
@@ -39,13 +42,13 @@
         .invoice-amount-total  { top: 8.80in; left: 5.4in; font-size: 30px; }
     }
 
-    /* 3. PRINT VIEW */
+    /* 3. PRINT VIEW (RESETS TO WHITE) */
     @media print {
         @page { size: letter portrait; margin: 0; }
-        body { margin: 0; padding: 0; overflow: hidden !important; }
+        body { margin: 0; padding: 0; overflow: hidden !important; background: white !important; }
         .no-print { display: none !important; }
         
-        .invoice-container { padding: 0; display: block; }
+        .invoice-container { padding: 0; background: none; display: block; }
 
         .invoice-wrapper {
             background-image: none !important; 
@@ -62,24 +65,9 @@
         .invoice-amount-sub    { top: 2.78in; left: 2.42in; }
         .invoice-amount-total  { top: 7.95in; left: 4.4in; }
 
-        .field { font-size: 18px !important; }
-    }
-
-    /* Print Button Container (No Input field anymore) */
-    .print-controls {
-        position: fixed;
-        top: 80px; 
-        right: 30px;
-        z-index: 9999;
+        .field { font-size: 18px !important; color: black !important; }
     }
 </style>
-
-{{-- Simplified Print Button --}}
-<div class="print-controls no-print">
-    <button onclick="window.print()" class="btn btn-success shadow-lg btn-lg">
-        <i class="fas fa-print"></i> Print Invoice
-    </button>
-</div>
 
 <div class="invoice-container">
     <div class="invoice-wrapper">

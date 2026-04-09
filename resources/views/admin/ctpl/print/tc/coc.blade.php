@@ -62,9 +62,22 @@
     .preview-container {
         display: flex;
         justify-content: center;
-        background-color: #f4f6f9;
+        /* Dark dashboard background */
+        background-color: #343a40; 
         padding: 40px 0;
+        border-radius: 0 0 .25rem .25rem;
     }
+
+    /* Dark theme for the navigation card */
+    .card.no-print {
+        background-color: #3f474e;
+        border-color: #4b545c;
+    }
+    
+    .nav-pills .nav-link {
+        color: #ced4da;
+    }
+
 
     .print-paper {
         background-color: white;
@@ -143,7 +156,7 @@
         /* Your exact coordinates for physical alignment */
         .policy-no   { top: 1.12in; left: 7.43in; }
         .assured     { top: 1.65in; left: 0.23in; width: 4in; }
-        .address     { top: 2.06in; left: 0.23in; width: 3.5in; }
+        .address     { top: 2.06in; left: 0.23in; width: 4in; }
         .date-issued { top: 1.92in; left: 5.60in; }
         .date-from   { top: 2.52in; left: 5.60in; }
         .date-to     { top: 2.52in; left: 7.33in; }

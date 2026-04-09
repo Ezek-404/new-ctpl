@@ -164,14 +164,12 @@ class CtplController extends Controller
                 })
                 ->addColumn('action', function($row) {
                     $viewUrl  = route('admin.ctpl.view', $row->transaction_id);
-                    $editUrl  = route('admin.ctpl.edit', $row->transaction_id);
                     $printUrl = route('admin.ctpl.print', $row->transaction_id);
 
                     return '
                     <div class="action-buttons d-flex justify-content-center">
                         <a href="'.$viewUrl.'" class="btn btn-sm text-primary p-1 mx-1" title="View Details"><i class="fas fa-eye"></i></a>
-                        <a href="'.$editUrl.'" class="btn btn-sm text-warning p-1 mx-1" title="Edit Policy"><i class="fas fa-edit"></i></a>
-                        <a href="'.$printUrl.'" class="btn btn-sm text-primary p-1 mx-1" title="Print Policy"><i class="fas fa-print"></i></a>
+                        <a href="'.$printUrl.'" class="btn btn-sm text-info p-1 mx-1" title="Print Policy"><i class="fas fa-print"></i></a>
                     </div>';
                 })
                 ->rawColumns(['checkbox', 'created_at', 'agent', 'coc_no', 'vehicle.assured', 'action'])
@@ -196,21 +194,28 @@ class CtplController extends Controller
         return view('admin.ctpl.edit', compact('issuance'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $transaction_id)
     {
-        $issuance = \App\Models\CtplIssuance::with('vehicle')->findOrFail($id);
+        // 1. Find the issuance record
+        $issuance = CtplIssuance::where('transaction_id', $transaction_id)->firstOrFail();
 
-        // Update the linked vehicle record
+        // 2. Update the related vehicle record
+        // Ensure these field names match your database columns and form "name" attributes
         $issuance->vehicle->update([
             'assured'    => strtoupper($request->assured),
+            'address'    => strtoupper($request->address),
             'plate_no'   => strtoupper($request->plate_no),
+            'year_model' => $request->year_model,
+            'color'      => strtoupper($request->color),
+            'make'       => strtoupper($request->make),
             'file_no'    => $request->file_no,
-            'engine_no'  => $request->engine_no,
-            'chassis_no' => $request->chassis_no,
+            'engine_no'  => strtoupper($request->engine_no),
+            'chassis_no' => strtoupper($request->chassis_no),
         ]);
 
-        return redirect()->route('admin.ctpl.view', $id)
-                        ->with('success', 'Vehicle details updated successfully.');
+        // 3. Redirect with success message
+        return redirect()->route('admin.ctpl.view', $transaction_id)
+                        ->with('success', 'Vehicle Details updated successfully.');
     }
 
     public function showPrint($id)

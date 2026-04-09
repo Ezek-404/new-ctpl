@@ -1,7 +1,36 @@
 @extends('adminlte::page')
 
 @section('title', 'CTPL Issuance')
+<style>
+    /* 1. Prevent White Background on Autocomplete/Selection */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus,
+    textarea:-webkit-autofill,
+    textarea:-webkit-autofill:hover,
+    textarea:-webkit-autofill:focus {
+        -webkit-text-fill-color: #ced4da !important; /* Your light text color */
+        -webkit-box-shadow: 0 0 0px 1000px #3f474e inset !important; /* Matches your dark field color */
+        transition: background-color 5000s ease-in-out 0s;
+    }
 
+    /* 2. Fix the specific focus state for the search/autofill fields */
+    .form-control:focus, 
+    #assured_name:focus, 
+    #address:focus {
+        background-color: #3f474e !important;
+        color: #ffffff !important;
+        border-color: #4b545c !important;
+        box-shadow: none !important;
+    }
+
+    /* 3. Style the suggestion dropdown itself (if using a custom list) */
+    .autocomplete-suggestions {
+        background: #343a40 !important;
+        border: 1px solid #4b545c;
+        color: #ffffff;
+    }
+</style>
 @section('content')
 <br>
 <div class="card card-outline card-primary">

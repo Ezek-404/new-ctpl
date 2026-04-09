@@ -1,152 +1,99 @@
 <style>
-    /* 1. PHYSICAL PAPER DIMENSIONS (Letter: 8.5 x 11) */
+    /* 1. SHARED BASE STYLES & DARK THEME OVERRIDES */
+    .invoice-container {
+        display: flex;
+        justify-content: center;
+        /* Matches your dark dashboard background */
+        background-color: #343a40; 
+        padding: 40px 0;
+        border-radius: 0 0 .25rem .25rem;
+    }
+
     .invoice-wrapper {
         background-color: white;
-        background-image: url('/images/invoice_page-0001.jpg');
-        background-size: contain;
-        background-repeat: no-repeat;
-        width: 8.5in;
-        height: 10.5in;
         position: relative;
-        font-family: "Times New Roman", Times, serif;
+        font-family: "Times New Roman", Times, serif !important;
         text-transform: uppercase;
-        margin: 0 auto;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        /* Enhanced shadow for dark theme visibility */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
     .field { 
         position: absolute; 
         color: black;
-        font-size: 16px;
-        font-weight: bold; 
+        font-weight: bold;
         line-height: 1; 
+        z-index: 10;
     }
 
-    /* 2. ALIGNMENT COORDINATES */
-    .invoice-date          { top: 1.86in; left: 3.72in; }
-    .invoice-received-from { top: 2.17in; left: 1.8in; width: 3in; text-align: center;}
-    .invoice-plate         { top: 2.58in; left: 2.2in; }
-    .invoice-amount-sub    { top: 2.81in; left: 2.42in; font-size: 18px; }
-    .invoice-amount-total  { top: 7.95in; left: 4.4in; font-size: 26px; }
-    .display_amount_val    { font-size: 24px; }
+    /* 2. DASHBOARD VIEW (ON SCREEN) */
+    @media screen {
+        .invoice-wrapper {
+            background-image: url('/images/invoice.jpg'); 
+            background-size: 100% 100%;
+            width: 7in; 
+            height: 11in; 
+        }
 
-    /* Input Styling (Floating UI) */
-    .amount-input-container {
-        position: fixed;
-        top: 80px; /* Adjusted to sit below AdminLTE navbar */
-        right: 30px;
-        background: #ffffff;
-        padding: 20px;
-        border: 2px solid #28a745;
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        z-index: 9999;
-        width: 200px;
+        .invoice-date          { top: 2.05in; left: 4.72in; font-size: 16px; }
+        .invoice-received-from { top: 2.34in; left: 1.65in; width: 4.5in; text-align: center; font-size: 16px; }
+        .invoice-plate         { top: 2.83in; left: 3in; font-size: 16px; }
+        .invoice-amount-sub    { top: 3.05in; left: 2.42in; font-size: 18px; }
+        .invoice-amount-total  { top: 8.80in; left: 5.4in; font-size: 30px; }
     }
 
-    /* 3. PRINT ENGINE FIXES */
+    /* 3. PRINT VIEW (RESETS TO WHITE) */
     @media print {
         @page { size: letter portrait; margin: 0; }
-        body { margin: 0; padding: 0; overflow: hidden !important; }
+        body { margin: 0; padding: 0; overflow: hidden !important; background: white !important; }
+        .no-print { display: none !important; }
         
+        .invoice-container { padding: 0; background: none; display: block; }
+
         .invoice-wrapper {
-            background-image: none !important; /* Hide background for impact printing */
+            background-image: none !important; 
+            width: 8.5in;
+            height: 10.5in;
+            box-shadow: none;
             padding-top: 0.75in !important;
             padding-left: 0.33in !important;
-            box-shadow: none;
-            margin: 0;
         }
-        
-        .no-print { display: none !important; }
+
+        .invoice-date          { top: 1.86in; left: 3.72in; }
+        .invoice-received-from { top: 2.14in; left: 1.5in; width: 3in; text-align: center; }
+        .invoice-plate         { top: 2.58in; left: 2.2in; }
+        .invoice-amount-sub    { top: 2.78in; left: 2.42in; }
+        .invoice-amount-total  { top: 7.95in; left: 4.4in; }
+
+        .field { font-size: 18px !important; color: black !important; }
     }
 </style>
 
-{{-- UI Input Section --}}
-<div class="amount-input-container no-print">
-    <label for="manual_amount"><strong>Invoice Amount:</strong></label>
-    <input type="number" id="manual_amount" class="form-control" 
-           value="550.00" step="0.01" 
-           oninput="updatePrintAmount(this.value)"
-           autofocus
-           style="font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">
-    
-    <button onclick="window.print()" class="btn btn-success btn-block shadow-sm">
-        <i class="fas fa-print"></i> Print Invoice
-    </button>
-    <small class="text-muted d-block mt-2 text-center">Press <b>Enter</b> to Print</small>
-</div>
+<div class="invoice-container">
+    <div class="invoice-wrapper">
+        {{-- Top Section --}}
+        <div class="field invoice-date">
+            {{ $issuance->created_at->format('M-d') }} &nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+            {{ $issuance->created_at->format('y') }}
+        </div>
+        <div class="field invoice-received-from">
+            {{ $issuance->vehicle->assured }}
+        </div>
 
-<div class="invoice-wrapper">
-    {{-- Top Section --}}
-    <div class="field invoice-date">
-        {{ $issuance->created_at->format('M-d') }} &nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-        {{ $issuance->created_at->format('y') }}
-    </div>
-    <div class="field invoice-received-from">
-        {{ $issuance->vehicle->assured }}
-    </div>
-
-    {{-- Middle Section --}}
-    <div class="field invoice-plate">
-        {{ $issuance->vehicle->plate_no }}
-    </div>
-    <div class="field invoice-amount-sub">
-        <span class="display_amount_val">-</span>
-    </div>
-    {{-- Bottom Section --}}
-    <div class="field invoice-amount-total">
-        <span class="display_amount_val">-</span>
-    </div>
-</div>
-
-<script>
-    // 1. Function to update the text on the page as you type
-    function updatePrintAmount(val) {
-        if (val === "") {
-            document.querySelectorAll('.display_amount_val').forEach(el => el.innerText = "0.00");
-            return;
-        }
-        const formatted = parseFloat(val).toFixed(2);
-        const finalVal = isNaN(formatted) ? val : formatted;
+        {{-- Middle Section --}}
+        <div class="field invoice-plate">
+            {{ $issuance->vehicle->plate_no }}
+        </div>
         
-        document.querySelectorAll('.display_amount_val').forEach(el => {
-            el.innerText = finalVal;
-        });
-    }
+        {{-- Pulled directly from database --}}
+        <div class="field invoice-amount-sub">
+            {{ number_format($issuance->amount, 2) }}
+        </div>
 
-    // 2. Helper function to focus and select the input text
-    function focusInvoiceInput() {
-        const amountInput = document.getElementById('manual_amount');
-        if (amountInput) {
-            amountInput.focus();
-            amountInput.select(); // Highlights the text so you can just start typing
-        }
-    }
-
-    // 3. Auto-focus on Initial Page Load
-    document.addEventListener('DOMContentLoaded', function() {
-        // Only focus if the invoice tab is the one currently active on load
-        if (window.location.hash === '#tab_invoice' || document.querySelector('#tab_invoice.active')) {
-            focusInvoiceInput();
-        }
-
-        // Trigger Print when pressing "Enter" inside the input
-        const amountInput = document.getElementById('manual_amount');
-        if (amountInput) {
-            amountInput.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    window.print();
-                }
-            });
-        }
-    });
-
-    // 4. CRITICAL: Auto-focus when switching to the Service Invoice Tab
-    $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
-        // e.target is the newly activated tab link
-        if (e.target.getAttribute('href') === '#tab_invoice') {
-            focusInvoiceInput();
-        }
-    });
-</script>
+        {{-- Bottom Section --}}
+        <div class="field invoice-amount-total">
+            {{ number_format($issuance->amount, 2) }}
+        </div>
+    </div>
+</div>
