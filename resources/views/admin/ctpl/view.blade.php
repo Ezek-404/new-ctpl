@@ -12,7 +12,7 @@
                 <i class="fas fa-arrow-left mr-1"></i> Back to List
             </a>
             <a href="{{ route('admin.ctpl.edit', $issuance->transaction_id) }}" class="btn btn-warning btn-sm px-3 text-dark font-weight-bold">
-                <i class="fas fa-edit mr-1"></i> Quick Edit
+                <i class="fas fa-edit mr-1"></i> Edit Details
             </a>
         </div>
     </div>
@@ -107,6 +107,14 @@
                         <label class="info-label text-info">Model & Manufacturer</label>
                         <div class="font-weight-bold text-monospace-spec">
                             {{ $issuance->vehicle->year_model ?? 'N/A' }} {{ $issuance->vehicle->make ?? 'N/A' }} {{ $issuance->vehicle->series ?? 'N/A' }}
+                        </div>
+                    </div>
+
+                    {{-- Color --}}
+                    <div class="detail-group mb-4 pl-3 border-left-muted">
+                        <label class="info-label text-info">Color</label>
+                        <div class="font-weight-bold text-monospace-spec">
+                            {{ $issuance->vehicle->color ?? 'N/A' }}
                         </div>
                     </div>
 

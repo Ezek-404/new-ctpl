@@ -16,6 +16,27 @@
     .modal-header { border-bottom: 1px solid #4b545c; }
     .modal-footer { border-top: 1px solid #4b545c; }
     .nav-tabs .nav-link.active { background-color: #454d55; color: #fff; border-color: #6c757d; }
+
+    /* Custom Scrollbar for the DataTable container */
+    .dataTables_scrollBody::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    .dataTables_scrollBody::-webkit-scrollbar-track {
+        background: #343a40; 
+    }
+    .dataTables_scrollBody::-webkit-scrollbar-thumb {
+        background: #6c757d;
+        border-radius: 4px;
+    }
+    .dataTables_scrollBody::-webkit-scrollbar-thumb:hover {
+        background: #495057; 
+    }
+
+    /* Fix to prevent header misalignment in dark mode */
+    .dataTables_scrollHead {
+        background-color: #343a40 !important;
+    }
 </style>
 @stop
 
@@ -49,10 +70,16 @@
                     ],
                     'order' => [[3, 'desc']], 
                     'autoWidth' => false,
-                    /* --- Update Pagination Here --- */
+                    
+                    /* --- Scrolling & Pagination Settings --- */
+                    'scrollY' => '450px',            // Sets the vertical height of the table body
+                    'scrollX' => true,              // Enables horizontal scrolling
+                    'scrollCollapse' => true,       // Table shrinks if there are fewer rows
+                    'paging' => true,               // Keeps your pagination active
+                    /* --------------------------------------- */
+
                     'lengthMenu' => [ [10, 50, 100, 500, 1000], [10, 50, 100, 500, 1000] ],
-                    'pageLength' => 10, // Default rows to display
-                    /* ------------------------------ */
+                    'pageLength' => 10, 
                     'columnDefs' => [
                         [
                             'targets' => [0, 1, 2, 3], 
