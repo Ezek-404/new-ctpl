@@ -154,7 +154,7 @@
 
         /* Your exact coordinates for physical alignment */
         .policy-no   { top: 1.21in; left: 7.43in; }
-        .assured     { top: 1.65in; left: 0.03in; width: 4in; }
+        .assured     { top: 1.65in; left: 0.03in; width: 5in; }
         .address     { top: 2.06in; left: 0.03in; width: 4in; }
         .date-issued { top: 2.01in; left: 5.60in; }
         .date-from   { top: 2.65in; left: 5.60in; }

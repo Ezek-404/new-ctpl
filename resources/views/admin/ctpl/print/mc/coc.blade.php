@@ -122,7 +122,7 @@
         .date-to     { top: 4.24in; left: 9.35in; }
         
         .year        { top: 5.07in; left: 0.60in; }
-        .make        { top: 5.07in; left: 2.35in; }
+        .make        { top: 5.07in; left: 2.35in; width: 2.5in;}
         .type        { top: 5.07in; left: 4.65in; }
         .color       { top: 5.07in; left: 6.85in; width: 1.9in; }
         .file        { top: 5.07in; left: 8.80in;}
@@ -162,7 +162,7 @@
         .date-to     { top: 2.65in; left: 7.33in; }
         
         .year        { top: 3.33in; left: 0.03in; }
-        .make        { top: 3.33in; left: 1.50in; }
+        .make        { top: 3.33in; left: 1.50in; width: 2in;}
         .type        { top: 3.33in; left: 3.54in; }
         .color       { top: 3.33in; left: 5.54in; width: 1.3in; }
         .file        { top: 3.33in; left: 7.12in; }

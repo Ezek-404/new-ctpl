@@ -43,11 +43,6 @@
     #transTable tbody td, 
     #transTable tbody td span:not(.coc-red) { font-weight: 400 !important; }
 
-    .coc-red { 
-        font-weight: 700 !important; 
-        color: #ff6b6b !important; 
-    }
-
     #transTable .action-buttons i {
         font-weight: 900 !important;
         display: inline-block !important;
@@ -113,7 +108,7 @@
                     ['data' => 'checkbox', 'name' => 'checkbox', 'orderable' => false, 'className' => 'text-center'],
                     ['data' => 'agent', 'name' => 'agent', 'className' => 'truncate'],
                     ['data' => 'vehicle.assured', 'name' => 'vehicle.assured', 'className' => 'truncate'],
-                    ['data' => 'coc_no', 'name' => 'coc_no', 'className' => 'coc-red'],
+                    ['data' => 'coc_no', 'name' => 'coc_no', 'className' => ''],
                     ['data' => 'vehicle.plate_no', 'name' => 'vehicle.plate_no'],
                     ['data' => 'vehicle.denomination', 'name' => 'vehicle.denomination'],
                     ['data' => 'created_at', 'name' => 'created_at'],

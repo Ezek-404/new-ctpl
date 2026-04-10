@@ -129,7 +129,7 @@ class CtplController extends Controller
                         '</span>';
                 })
                 ->addColumn('coc_no', function($row) {
-                    return '<span class="text-danger font-weight-bold">' . ($row->coc->coc_no ?? 'N/A') . '</span>';
+                    return '<span class="font-weight-bold">' . ($row->coc->coc_no ?? 'N/A') . '</span>';
                 })
                 // UPDATED: Detects type for Ribbon, then cleans the name
                 ->editColumn('agent', function($row) {
