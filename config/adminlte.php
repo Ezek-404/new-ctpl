@@ -331,6 +331,13 @@ return [
             'icon' => 'fas fa-fw fa-th',
             'active' => ['admin/saved-transactions*'],
         ],
+
+        [
+            'text' => 'Comprehensive',
+            'url'  => 'admin/comprehensive', // Matches the route prefix + resource name
+            'icon' => 'fas fa-fw fa-shield-alt',
+            'active' => ['admin/comprehensive*'], // Keeps the link highlighted when on sub-pages
+        ],
         
         //'ARCHIVE',
         //[

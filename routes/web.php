@@ -5,6 +5,7 @@ use App\Http\Controllers\CocController;
 use App\Http\Controllers\CtplController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ComprehensiveController;
 
 // --- Public Routes ---
 Route::get('/', function () {
@@ -52,4 +53,6 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::put('/update/{id}', [CtplController::class, 'update'])->name('update'); // Added Update to CtplController
         Route::get('/print/{id}', [CtplController::class, 'showPrint'])->name('print');
     });
+
+    Route::resource('comprehensive', ComprehensiveController::class);
 });
