@@ -75,14 +75,31 @@
                         <x-adminlte-input name="tsi" id="tsi" type="text" label="Vehicle Price (TSI)" fgroup-class="col-md-6" placeholder="0.00"/>
                         <x-adminlte-input name="od_rate" id="od_rate" type="number" label="OD/Theft Rate (%)" value="" fgroup-class="col-md-6" step="0.01" placeholder="0.00"/>
                         
-                        <x-adminlte-select name="bi_limit" id="bi_limit" label="Section IV-A: Bodily Injury (BI)" fgroup-class="col-md-6">
+                        <x-adminlte-select name="bi_limit" id="bi_limit" label="Bodily Injury (BI)" fgroup-class="col-md-6">
+                            <option value="50000" data-premium="195">50,000</option>
+                            <option value="75000" data-premium="225">75,000</option>
                             <option value="100000" data-premium="270">100,000</option>
+                            <option value="150000" data-premium="345">150,000</option>
                             <option value="200000" data-premium="420">200,000</option>
+                            <option value="250000" data-premium="510">250,000</option>
+                            <option value="300000" data-premium="585">300,000</option>
+                            <option value="400000" data-premium="675">400,000</option>
+                            <option value="500000" data-premium="780">500,000</option>
+                            <option value="750000" data-premium="915">750,000</option>
+                            <option value="1000000" data-premium="1050">1,000,000</option>
                         </x-adminlte-select>
 
-                        <x-adminlte-select name="pd_limit" id="pd_limit" label="Section IV-B: Property Damage (PD)" fgroup-class="col-md-6">
-                            <option value="100000" data-premium="1095">100,000</option>
+                        <x-adminlte-select name="pd_limit" id="pd_limit" label="Property Damage (PD)" fgroup-class="col-md-6">
+                            <option value="50000" data-premium="975">50,000</option>
+                            <option value="75000" data-premium="1035">75,000</option>
+                            <option value="150000" data-premium="1170">150,000</option>
                             <option value="200000" data-premium="1245">200,000</option>
+                            <option value="250000" data-premium="1320">250,000</option>
+                            <option value="300000" data-premium="1395">300,000</option>
+                            <option value="400000" data-premium="1515">400,000</option>
+                            <option value="500000" data-premium="1635">500,000</option>
+                            <option value="750000" data-premium="1920">750,000</option>
+                            <option value="1000000" data-premium="2235">1,000,000</option>
                         </x-adminlte-select>
 
                         <x-adminlte-input name="pa_premium" id="pa_premium" type="number" label="P.A. Premium" value="250" readonly fgroup-class="col-md-6"/>
