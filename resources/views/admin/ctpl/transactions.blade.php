@@ -5,9 +5,14 @@
 @section('content_header')
     <div class="d-flex justify-content-between align-items-center mb-2">
         <h1 class="text-white">Saved Transactions</h1>
-        <button id="btnBatchAuthenticate" class="btn btn-success shadow-sm">
-            <i class="fas fa-file-csv mr-1"></i> Batch Authenticate (ISAP CSV)
-        </button>
+        <div class="mb-3">
+                <button id="btnAuthenticateOICP" class="btn btn-primary btn-sm">
+                    <i class="fas fa-shield-alt"></i> Batch OICP
+                </button>
+                <button id="btnBatchAuthenticate" class="btn btn-success btn-sm">
+                    <i class="fas fa-file-excel"></i> Batch ISAP
+                </button>
+            </div>
     </div>
 
 <style>
@@ -306,6 +311,126 @@ $(document).ready(function() {
         let ws = XLSX.utils.aoa_to_sheet(excelData);
         XLSX.utils.book_append_sheet(wb, ws, "ISAP Upload");
         XLSX.writeFile(wb, "ISAP_Upload_" + new Date().getTime() + ".xlsx");
+    });
+
+    // 5. Authenticate OICP Logic
+    $('#btnAuthenticateOICP').on('click', function() {
+        const checked = $('#transTable tbody .row-checkbox:checked');
+        
+        if (checked.length === 0) {
+            Swal.fire({
+                icon: 'info',
+                title: 'No Selection',
+                text: 'Please select rows to generate the OICP Template.',
+                background: '#343a40',
+                color: '#fff'
+            });
+            return;
+        }
+
+        // Define Header based on your provided column list
+        let oicpData = [
+            [
+                "Transaction Type", "Authentication Type", "Car Type", "Serial/Chassis No", 
+                "Motor No./Engine No.", "Plate No", "MV file Number", "Assured Name", 
+                "Assured Address", "Mobile Number", "Email Address", "O.R Number", 
+                "COC Number", "Policy Number", "Assured TIN", "Inception Date", 
+                "Expiration Date To", "Vehicle Type", "LTO MV Type", "LTO Branch", 
+                "Series/Model", "Vehicle Make", "Year", "Body Type", "Color", 
+                "Unladen Weight / GVW (KG)", "Authorized Capacity (KG)"
+            ]
+        ];
+
+        checked.each(function() {
+            const rowData = table.row($(this).closest('tr')).data();
+            if (!rowData) return;
+
+            // 1. Vehicle Type (OICP Category) Mapping Logic
+            let denom = clean(rowData.vehicle.denomination).toUpperCase();
+            let oicpVehicleType = "Private Car"; // Default fallback
+
+            if (["CAR", "UTILITY VEHICLE", "SEDAN", "SUV", "HATCHBACK", "COUPE", "PASSENGER CAR"].includes(denom)) {
+                oicpVehicleType = "Private Car";
+            } else if (denom.includes("TRUCK")) {
+                oicpVehicleType = "Heavy Trucks";
+            } else if (["MC", "MTC", "TRICYCLE"].includes(denom)) {
+                oicpVehicleType = "Motorcycles/Tricycles, Trailers";
+            }
+
+            // 2. NEW: LTO MV Type Mapping Logic
+            let ltoMvType = "";
+            if (denom === "SUV") {
+                ltoMvType = "SV";
+            } else if (denom === "UTILITY VEHICLE") {
+                ltoMvType = "UV";
+            } else if (["CAR", "SEDAN", "HATCHBACK", "COUPE", "PASSENGER"].some(type => denom.includes(type))) {
+                ltoMvType = "C";
+            } else if (denom.includes("TRUCK")) {
+                ltoMvType = "TK";
+            } else if (denom === "MC") {
+                ltoMvType = "M";
+            } else if (denom === "MTC") {
+                ltoMvType = "MS";
+            } else if (denom === "TRICYCLE") {
+                ltoMvType = "TC";
+            } else {
+                ltoMvType = denom; // Fallback to original if no match
+            }
+
+            // 2. Date Processing (Updated to YYYY-DD-MM)
+            let dateStr = clean(rowData.created_at).split('|')[0].trim();
+            let inceDateObj = new Date(dateStr);
+            
+            // Format: YYYY-DD-MM
+            let inceDate = inceDateObj.getFullYear() + '-' +
+                           (inceDateObj.getDate() + '').padStart(2, '0') + '-' +
+                           ((inceDateObj.getMonth() + 1) + '').padStart(2, '0');
+
+            let expiDateObj = new Date(inceDateObj);
+            expiDateObj.setFullYear(expiDateObj.getFullYear() + 1);
+            
+            // Format: YYYY-DD-MM
+            let expiDate = expiDateObj.getFullYear() + '-' +
+                           (expiDateObj.getDate() + '').padStart(2, '0') + '-' +
+                           ((expiDateObj.getMonth() + 1) + '').padStart(2, '0');
+
+            // 3. Row Mapping
+            oicpData.push([
+                "RENEW",                          // Transaction Type
+                "Manual",                         // Authentication Type
+                "Vehicle",                        // Car Type
+                clean(rowData.vehicle.chassis_no, true),
+                clean(rowData.vehicle.engine_no, true),
+                clean(rowData.vehicle.plate_no, true),
+                clean(rowData.vehicle.file_no, true),
+                clean(rowData.vehicle.assured),
+                clean(rowData.vehicle.address || "N/A"), 
+                "09209167801",                    // Mobile
+                "TESS_ALPHA1@GMAIL.COM",          // Email
+                "-",                              // O.R Number
+                clean(rowData.coc_no, true),
+                clean(rowData.policy_no || ""),   // Policy Number
+                "11111111111",                    // Assured TIN
+                inceDate,
+                expiDate,
+                oicpVehicleType,                  // Mapping result from step 1
+                ltoMvType,                               // LTO MV Type
+                "-",                               // LTO Branch
+                clean(rowData.vehicle.series || ""), 
+                clean(rowData.vehicle.make || ""),   
+                clean(rowData.vehicle.year_model || ""),   
+                clean(rowData.vehicle.denomination || ""), 
+                clean(rowData.vehicle.color || ""),     
+                clean(rowData.vehicle.gross_weight || "0"), 
+                clean(rowData.vehicle.capacity || "0")
+            ]);
+        });
+
+        // Generate Excel
+        let wb = XLSX.utils.book_new();
+        let ws = XLSX.utils.aoa_to_sheet(oicpData);
+        XLSX.utils.book_append_sheet(wb, ws, "OICP Template");
+        XLSX.writeFile(wb, "OICP_Authenticate_" + new Date().getTime() + ".xlsx");
     });
 });
 </script>

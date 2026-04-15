@@ -54,7 +54,7 @@ class CtplController extends Controller
                         'MC' => [550, 650], 'MTC' => [550, 650], 'TRICYCLE' => [550, 650],
                         'CAR' => [950, 1380], 'SEDAN' => [950, 1380], 'HATCHBACK' => [950, 1380], 
                         'PASSENGER CAR' => [950, 1380], 'COUPE' => [950, 1380],
-                        'UTILITY VEHICLE' => [1050, 1380], 'SUV' => [1050, 1380],
+                        'UTILITY VEHICLE' => [1000, 1380], 'SUV' => [1000, 1380],
                         'TRUCK' => [1500, 2000], 'TRAILER' => [1500, 2000],
                     ];
 

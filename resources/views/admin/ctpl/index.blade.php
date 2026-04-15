@@ -200,9 +200,9 @@ $(document).ready(function() {
         'PASSENGER CAR': { min: 950, max: 1380 }, 
         'COUPE': { min: 950, max: 1380 },
         
-        // UV Type: 1050 - 1380
-        'UTILITY VEHICLE': { min: 1050, max: 1380 }, 
-        'SUV': { min: 1050, max: 1380 },
+        // UV Type: 1000 - 1380
+        'UTILITY VEHICLE': { min: 1000, max: 1380 }, 
+        'SUV': { min: 1000, max: 1380 },
         
         // CV Type: 1500 - 2000
         'TRUCK': { min: 1500, max: 2000 }, 

@@ -92,6 +92,7 @@
                         <x-adminlte-select name="pd_limit" id="pd_limit" label="Property Damage (PD)" fgroup-class="col-md-6">
                             <option value="50000" data-premium="975">50,000</option>
                             <option value="75000" data-premium="1035">75,000</option>
+                            <option value="100000" data-premium="1095">100,000</option>
                             <option value="150000" data-premium="1170">150,000</option>
                             <option value="200000" data-premium="1245">200,000</option>
                             <option value="250000" data-premium="1320">250,000</option>
