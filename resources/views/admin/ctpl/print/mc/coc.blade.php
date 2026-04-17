@@ -210,22 +210,22 @@
         .engine { top: 3.71in; left: 3.8in; font-size: 18px !important; }
 
         /* POLICY Print Coordinates */
-        .p_policy-no   { top: 1.88in; left: 7.43in; }
-        .p_assured     { top: 2.40in; left: 0.0in; width: 5in; }
+        .p_policy-no   { top: 1.88in; left: 7.53in; }
+        .p_assured     { top: 2.40in; left: 0.30in; width: 5in; }
         .p_address     { top: 2.72in; left: 0.30in; width: 4in; }
-        .p_date-issued { top: 2.55in; left: 5.60in; }
-        .p_date-from   { top: 2.99in; left: 5.60in; }
-        .p_date-to     { top: 2.99in; left: 7.48in; }
+        .p_date-issued { top: 2.60in; left: 5.65in; }
+        .p_date-from   { top: 3.05in; left: 5.65in; }
+        .p_date-to     { top: 3.05in; left: 7.53in; }
         
-        .p_year        { top: 3.37in; left: 0.40in; }
-        .p_make        { top: 3.37in; left: 1.95in; }
-        .p_type        { top: 3.37in; left: 3.8in; }
-        .p_color       { top: 3.37in; left: 5.54in; width: 1.3in; }
-        .p_file        { top: 3.37in; left: 7.12in; }
+        .p_year        { top: 3.60in; left: 0.40in; }
+        .p_make        { top: 3.60in; left: 1.95in; }
+        .p_type        { top: 3.60in; left: 3.8in; }
+        .p_color       { top: 3.60in; left: 5.54in; width: 1.3in; }
+        .p_file        { top: 3.60in; left: 7.12in; }
         
-        .p_plate       { top: 3.71in; left: 0.40in; }
-        .p_chassis     { top: 3.71in; left: 1.95in; }
-        .p_engine      { top: 3.71in; left: 3.8in; }
+        .p_plate       { top: 3.96in; left: 0.40in; }
+        .p_chassis     { top: 3.96in; left: 1.95in; }
+        .p_engine      { top: 3.96in; left: 3.9in; }
 
         .p_field { font-size: 16px !important; }
     }

@@ -18,7 +18,7 @@
         box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    .field { 
+    .si_field { 
         position: absolute; 
         color: black;
         font-weight: bold;
@@ -65,34 +65,34 @@
         .invoice-amount-sub    { top: 2.75in; left: 2.42in; }
         .invoice-amount-total  { top: 7.95in; left: 4.4in; }
 
-        .field { font-size: 18px !important; color: black !important; }
+        .si_field { font-size: 18px !important; color: black !important; }
     }
 </style>
 
 <div class="invoice-container">
     <div class="invoice-wrapper">
         {{-- Top Section --}}
-        <div class="field invoice-date">
+        <div class="si_field invoice-date">
             {{ $issuance->created_at->format('M-d') }} &nbsp;&nbsp;&nbsp;&nbsp;
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
             {{ $issuance->created_at->format('y') }}
         </div>
-        <div class="field invoice-received-from">
+        <div class="si_field invoice-received-from">
             {{ $issuance->vehicle->assured }}
         </div>
 
         {{-- Middle Section --}}
-        <div class="field invoice-plate">
+        <div class="si_field invoice-plate">
             {{ $issuance->vehicle->plate_no }}
         </div>
         
         {{-- Pulled directly from database --}}
-        <div class="field invoice-amount-sub">
+        <div class="si_field invoice-amount-sub">
             {{ number_format($issuance->amount, 2) }}
         </div>
 
         {{-- Bottom Section --}}
-        <div class="field invoice-amount-total">
+        <div class="si_field invoice-amount-total">
             {{ number_format($issuance->amount, 2) }}
         </div>
     </div>
