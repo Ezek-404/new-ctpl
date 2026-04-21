@@ -50,8 +50,10 @@
                             <div class="field file">{{ preg_replace('/^(\d{6})0+(\d+)/', '$1-$2', $issuance->vehicle->file_no) }}</div>
 
                             <div class="field plate">{{ $issuance->vehicle->plate_no }}</div>
-                            <div class="field chassis">{{ $issuance->vehicle->chassis_no }}</div>
-                            <div class="field engine">{{ $issuance->vehicle->engine_no }}</div>
+                            <div class="field chassis-engine-row">
+                                <span class="chassis-cell">{{ $issuance->vehicle->chassis_no }}</span>
+                                <span class="engine-cell">{{ $issuance->vehicle->engine_no }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -76,13 +78,14 @@
                             <div class="p_field p_file">{{ preg_replace('/^(\d{6})0+(\d+)/', '$1-$2', $issuance->vehicle->file_no) }}</div>
 
                             <div class="p_field p_plate">{{ $issuance->vehicle->plate_no }}</div>
-                            <div class="p_field p_chassis">{{ $issuance->vehicle->chassis_no }}</div>
-                            <div class="p_field p_engine">{{ $issuance->vehicle->engine_no }}</div>
+                            <div class="p_field p_chassis-engine-row">
+                                <span class="p_chassis-cell">{{ $issuance->vehicle->chassis_no }}</span>
+                                <span class="p_engine-cell">{{ $issuance->vehicle->engine_no }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
 
         <div class="tab-pane" id="tab_invoice">
@@ -92,7 +95,7 @@
 </div>
 
 <style>
-    /* 1. SCREEN STYLES */
+    /* BASIC LAYOUT */
     .preview-container, .policy-container {
         display: flex;
         justify-content: center;
@@ -116,6 +119,7 @@
         z-index: 10;
     }
 
+    /* 1. SCREEN STYLES */
     @media screen {
         .print-paper {
             background-image: url('/images/coc_{{ $folder }}.png');
@@ -128,40 +132,49 @@
             width: 12in; height: 18in; 
         }
 
-        /* All your Screen Coordinates here (Kept same as before) */
-        .coc-no      { top: 1.68in; left: 8.62in; color: #d9534f; font-size: 34px; }
-        .policy-no   { top: 2.40in; left: 9.67in; font-size: 21px; }
-        .assured     { top: 2.90in; left: 0.55in; width: 5.5in; font-size: 21px;}
-        .address     { top: 3.60in; left: 0.55in; width: 5.5in; font-size: 21px;}
-        .date-issued { top: 3.37in; left: 7.10in; font-size: 21px;}
-        .date-from   { top: 4.16in; left: 7.10in; font-size: 21px;}
-        .date-to     { top: 4.16in; left: 9.30in; font-size: 21px;}
-        .year { top: 4.98in; left: 0.55in; font-size: 21px;}
-        .make { top: 4.98in; left: 2.30in; font-size: 21px;}
-        .type { top: 4.98in; left: 4.57in; font-size: 21px;}
-        .color { top: 4.98in; left: 6.80in; width: 1.9in; font-size: 21px;}
-        .file { top: 4.98in; left: 8.80in; font-size: 21px;}
-        .plate { top: 5.43in; left: 0.55in; font-size: 21px;}
-        .chassis { top: 5.43in; left: 2.30in; font-size: 21px;}
-        .engine { top: 5.43in; left: 4.98in; font-size: 21px;}
+        /* COC Coordinates */
+        .coc-no      { top: 1.76in; left: 8.62in; color: #d9534f; font-size: 34px; }
+        .policy-no   { top: 2.50in; left: 9.67in; font-size: 21px; }
+        .assured     { top: 3in; left: 0.60in; width: 5.5in; font-size: 21px;}
+        .address     { top: 3.50in; left: 0.60in; width: 5.5in; font-size: 21px;}
+        .date-issued { top: 3.45in; left: 7.25in; font-size: 21px;}
+        .date-from   { top: 4.24in; left: 7.25in; font-size: 21px;}
+        .date-to     { top: 4.24in; left: 9.45in; font-size: 21px;}
+        .year        { top: 5.05in; left: 0.60in; font-size: 21px;}
+        .make        { top: 5.05in; left: 2.35in; font-size: 21px;}
+        .type        { top: 5.05in; left: 4.62in; font-size: 21px;}
+        .color       { top: 5.05in; left: 6.85in; width: 1.9in; font-size: 21px;}
+        .file        { top: 5.05in; left: 8.75in; font-size: 21px;}
+        .plate       { top: 5.52in; left: 0.60in; font-size: 21px;}
 
-        /* Policy Screen Coordinates */
+        /* Chassis/Engine Flexbox Logic */
+        .chassis-engine-row {
+            display: flex; position: absolute;
+            top: 5.52in; left: 2.35in;
+            font-size: 21px; width: 8in;
+        }
+        .chassis-cell { min-width: 2.27in; white-space: nowrap; padding-right: 10px; }
+        .engine-cell { white-space: nowrap; }
+
+        /* Policy Coordinates */
         .p_policy-no   { top: 2.90in; left: 9.97in; }
         .p_assured     { top: 3.35in; left: 1.15in; width: 5.5in; }
-        .p_address     { top: 3.75in; left: 1.15in; width: 5.5in; } /* Slightly smaller for address overflow */
+        .p_address     { top: 3.75in; left: 1.15in; width: 5.5in; }
         .p_date-issued { top: 3.62in; left: 7.50in; }
         .p_date-from   { top: 4.26in; left: 7.50in; }
         .p_date-to     { top: 4.26in; left: 9.97in; }
-        
         .p_year        { top: 4.78in; left: 1.15in; }
         .p_make        { top: 4.78in; left: 3.07in; }
         .p_type        { top: 4.80in; left: 5.11in; }
         .p_color       { top: 4.80in; left: 7.11in; width: 1.9in; }
         .p_file        { top: 4.80in; left: 9.31in;}
-        
         .p_plate       { top: 5.13in; left: 1.15in; }
-        .p_chassis     { top: 5.16in; left: 3.07in; }
-        .p_engine      { top: 5.16in; left: 5.11in; }
+
+        .p_chassis-engine-row {
+            display: flex; position: absolute;
+            top: 5.16in; left: 3.07in; font-size: 16px;
+        }
+        .p_chassis-cell { min-width: 2.04in; white-space: nowrap; padding-right: 10px; }
     }
 
     /* 2. PRINT STYLES */
@@ -170,64 +183,48 @@
         body { margin: 0; padding: 0; background: none !important; }
         .no-print { display: none !important; }
 
-        /* CRITICAL: Force Policy to Page 2 */
-        .coc-section { 
-            page-break-after: always !important; 
-            break-after: page !important;
-            display: block !important;
-        }
+        .coc-section { page-break-after: always !important; break-after: page !important; display: block !important; }
+        .preview-container, .policy-container { padding: 0; background: none; display: block; }
+        .excel-margin-wrapper { padding-top: 0.75in !important; padding-left: 0.33in !important; }
+        .print-paper, .policy-print-paper { background-image: none !important; box-shadow: none; width: 8.5in; height: 6in; }
 
-        .preview-container, .policy-container { 
-            padding: 0; background: none; display: block; 
-        }
-
-        .excel-margin-wrapper {
-            padding-top: 0.75in !important;
-            padding-left: 0.33in !important;
-        }
-
-        .print-paper, .policy-print-paper {
-            background-image: none !important;
-            box-shadow: none;
-            width: 8.5in; height: 6in;
-        }
-
-        /* COC Print Coordinates */
-        .coc-no { display: none !important; }
+        /* COC Print */
+        .coc-no      { display: none !important; }
         .policy-no   { top: 1.21in; left: 7.43in; font-size: 18px !important; }
         .assured     { top: 1.65in; left: 0.03in; width: 5in; font-size: 18px !important; }
         .address     { top: 2.06in; left: 0.03in; width: 4in; font-size: 18px !important; }
         .date-issued { top: 2.01in; left: 5.60in; font-size: 18px !important; }
         .date-from   { top: 2.65in; left: 5.60in; font-size: 18px !important; }
         .date-to     { top: 2.65in; left: 7.33in; font-size: 18px !important; }
-        .year { top: 3.33in; left: 0.03in; font-size: 18px !important; }
-        .make { top: 3.33in; left: 1.50in; font-size: 18px !important; }
-        .type { top: 3.33in; left: 3.54in; font-size: 18px !important; }
-        .color { top: 3.33in; left: 5.54in; width: 1.3in; font-size: 18px !important; }
-        .file { top: 3.33in; left: 7.12in; font-size: 18px !important; }
-        .plate { top: 3.71in; left: 0.03in; font-size: 18px !important; }
-        .chassis { top: 3.71in; left: 1.50in; font-size: 18px !important; }
-        .engine { top: 3.71in; left: 3.8in; font-size: 18px !important; }
+        .year        { top: 3.33in; left: 0.03in; font-size: 18px !important; }
+        .make        { top: 3.33in; left: 1.50in; font-size: 18px !important; }
+        .type        { top: 3.33in; left: 3.54in; font-size: 18px !important; }
+        .color       { top: 3.33in; left: 5.54in; width: 1.3in; font-size: 18px !important; }
+        .file        { top: 3.33in; left: 7.12in; font-size: 18px !important; }
+        .plate       { top: 3.71in; left: 0.03in; font-size: 18px !important; }
 
-        /* POLICY Print Coordinates */
+        .chassis-engine-row { display: flex; position: absolute; top: 3.71in; left: 1.50in; }
+        .chassis-cell { min-width: 2.05in; font-size: 18px !important; white-space: nowrap; padding-right: 5px; }
+        .engine-cell { font-size: 18px !important; white-space: nowrap; }
+
+        /* Policy Print */
+        .p_field       { font-size: 16px !important; }
         .p_policy-no   { top: 1.88in; left: 7.53in; }
         .p_assured     { top: 2.40in; left: 0.30in; width: 5in; }
         .p_address     { top: 2.72in; left: 0.30in; width: 4in; }
         .p_date-issued { top: 2.60in; left: 5.65in; }
         .p_date-from   { top: 3.05in; left: 5.65in; }
         .p_date-to     { top: 3.05in; left: 7.53in; }
-        
         .p_year        { top: 3.60in; left: 0.40in; }
         .p_make        { top: 3.60in; left: 1.95in; }
         .p_type        { top: 3.60in; left: 3.8in; }
         .p_color       { top: 3.60in; left: 5.54in; width: 1.3in; }
         .p_file        { top: 3.60in; left: 7.12in; }
-        
         .p_plate       { top: 3.96in; left: 0.40in; }
-        .p_chassis     { top: 3.96in; left: 1.95in; }
-        .p_engine      { top: 3.96in; left: 3.9in; }
 
-        .p_field { font-size: 16px !important; }
+        .p_chassis-engine-row { display: flex; position: absolute; top: 3.96in; left: 1.95in; }
+        .p_chassis-cell { min-width: 1.95in; font-size: 16px !important; white-space: nowrap; padding-right: 5px; }
+        .p_engine-cell { font-size: 16px !important; }
     }
 </style>
 @stop
