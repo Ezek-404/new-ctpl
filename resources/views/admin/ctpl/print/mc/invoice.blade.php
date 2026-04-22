@@ -35,11 +35,11 @@
             height: 11in; 
         }
 
-        .invoice-date          { top: 2.05in; left: 4.72in; font-size: 16px; }
-        .invoice-received-from { top: 2.34in; left: 1.70in; width: 5in; text-align: center; font-size: 16px; }
-        .invoice-plate         { top: 2.83in; left: 3in; font-size: 16px; }
-        .invoice-amount-sub    { top: 3.05in; left: 2.42in; font-size: 18px; }
-        .invoice-amount-total  { top: 8.80in; left: 5.4in; font-size: 30px; }
+        .invoice-date          { top: 2.12in; left: 4.72in; font-size: 16px; }
+        .invoice-received-from { top: 2.38in; left: 1.70in; width: 5in; text-align: center; font-size: 16px; }
+        .invoice-plate         { top: 2.83in; left: 5.5in; font-size: 16px; }
+        .invoice-amount-sub    { top: 3.05in; left: 2.62in; font-size: 18px; }
+        .invoice-amount-total  { top: 8.60in; left: 5.4in; font-size: 30px; }
     }
 
     /* 3. PRINT VIEW (RESETS TO WHITE) */
@@ -74,7 +74,8 @@
         {{-- Top Section --}}
         <div class="field invoice-date">
             {{ $issuance->created_at->format('M-d') }} &nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      
             {{ $issuance->created_at->format('y') }}
         </div>
         <div class="field invoice-received-from">
