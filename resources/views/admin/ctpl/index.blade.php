@@ -189,9 +189,9 @@ $(document).ready(function() {
     // --- 0. PRICE CONFIGURATION (MIN/MAX RANGES) ---
     const priceConfig = {
         // MC Type: 550 - 650
-        'MC': { min: 550, max: 650 }, 
-        'MTC': { min: 550, max: 650 }, 
-        'TRICYCLE': { min: 550, max: 650 },
+        'MC': { min: 500, max: 650 }, 
+        'MTC': { min: 500, max: 650 }, 
+        'TRICYCLE': { min: 500, max: 650 },
         
         // PC Type: 950 - 1380
         'CAR': { min: 950, max: 1380 }, 

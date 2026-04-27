@@ -51,7 +51,7 @@ class CtplController extends Controller
                 function ($attribute, $value, $fail) use ($request) {
                     // Define logic ranges to match your JS priceConfig
                     $ranges = [
-                        'MC' => [550, 650], 'MTC' => [550, 650], 'TRICYCLE' => [550, 650],
+                        'MC' => [500, 650], 'MTC' => [500, 650], 'TRICYCLE' => [500, 650],
                         'CAR' => [950, 1380], 'SEDAN' => [950, 1380], 'HATCHBACK' => [950, 1380], 
                         'PASSENGER CAR' => [950, 1380], 'COUPE' => [950, 1380],
                         'UTILITY VEHICLE' => [1000, 1380], 'SUV' => [1000, 1380],
