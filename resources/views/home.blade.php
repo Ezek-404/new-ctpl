@@ -53,21 +53,21 @@
             </div>
         </div>
 
-        <div class="col-lg-3 col-6 fade-in-card delay-2">
-            <div class="small-box bg-warning">
-                <div class="inner">
-                    <h3 class="count-me">{{ $availTC }}</h3>
-                    <p>Tricycle (TC)</p>
-                </div>
-                <div class="icon"><i class="fas fa-motorcycle"></i></div>
-            </div>
-        </div>
-
         <div class="col-lg-3 col-6 fade-in-card delay-3">
             <div class="small-box bg-info">
                 <div class="inner">
                     <h3 class="count-me">{{ $availMC }}</h3>
                     <p>Motorcycle (MC)</p>
+                </div>
+                <div class="icon"><i class="fas fa-motorcycle"></i></div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-6 fade-in-card delay-2">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3 class="count-me">{{ $availTC }}</h3>
+                    <p>Tricycle (TC)</p>
                 </div>
                 <div class="icon"><i class="fas fa-motorcycle"></i></div>
             </div>
@@ -106,14 +106,14 @@
                         </div>
                         <div class="col-sm-3 col-6">
                             <div class="description-block border-right">
-                                <h5 class="description-header text-warning count-me">{{ $tcInsured }}</h5>
-                                <span class="description-text">TOTAL TC ISSUED</span>
+                                <h5 class="description-header text-info count-me">{{ $mcInsured }}</h5>
+                                <span class="description-text">TOTAL MC ISSUED</span>
                             </div>
                         </div>
                         <div class="col-sm-3 col-6">
                             <div class="description-block border-right">
-                                <h5 class="description-header text-info count-me">{{ $mcInsured }}</h5>
-                                <span class="description-text">TOTAL MC ISSUED</span>
+                                <h5 class="description-header text-warning count-me">{{ $tcInsured }}</h5>
+                                <span class="description-text">TOTAL TC ISSUED</span>
                             </div>
                         </div>
                         <div class="col-sm-3 col-6">
@@ -158,14 +158,14 @@ $(function () {
           data: {!! json_encode($pcData) !!}
         },
         {
-          label: 'TC',
-          backgroundColor: '#ffc107',
-          data: {!! json_encode($tcData) !!}
-        },
-        {
           label: 'MC',
           backgroundColor: '#17a2b8',
           data: {!! json_encode($mcData) !!}
+        },
+        {
+          label: 'TC',
+          backgroundColor: '#ffc107',
+          data: {!! json_encode($tcData) !!}
         },
         {
           label: 'CV',
