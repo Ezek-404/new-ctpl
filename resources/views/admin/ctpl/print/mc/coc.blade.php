@@ -199,7 +199,7 @@
         .year        { top: 3.33in; left: 0.03in; font-size: 18px !important; }
         .make        { top: 3.33in; left: 1.50in; font-size: 18px !important; }
         .type        { top: 3.33in; left: 3.54in; font-size: 18px !important; }
-        .color       { top: 3.33in; left: 5.54in; width: 1.3in; font-size: 18px !important; }
+        .color       { top: 3.33in; left: 5.34in; width: 1.3in; font-size: 18px !important; }
         .file        { top: 3.33in; left: 7.12in; font-size: 18px !important; }
         .plate       { top: 3.71in; left: 0.03in; font-size: 18px !important; }
 
