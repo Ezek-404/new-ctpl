@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CocController;
 use App\Http\Controllers\CtplController;
 use App\Http\Controllers\ProfileController;
@@ -49,10 +50,15 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         
         // Transaction Actions
         Route::get('/view/{id}', [CtplController::class, 'show'])->name('view');
-        Route::get('/edit/{id}', [CtplController::class, 'edit'])->name('edit'); // Added Edit to CtplController
-        Route::put('/update/{id}', [CtplController::class, 'update'])->name('update'); // Added Update to CtplController
+        Route::get('/edit/{id}', [CtplController::class, 'edit'])->name('edit'); 
+        Route::put('/update/{id}', [CtplController::class, 'update'])->name('update'); 
         Route::get('/print/{id}', [CtplController::class, 'showPrint'])->name('print');
     });
 
-    Route::resource('comprehensive', ComprehensiveController::class);
+    // --- Comprehensive Insurance Actions ---
+    // Maps to URL: /admin/comprehensive and names it: admin.comprehensive.index / admin.comprehensive.store
+    Route::group(['prefix' => 'comprehensive', 'as' => 'comprehensive.'], function () {
+        Route::get('/', [ComprehensiveController::class, 'index'])->name('index');
+        Route::post('/store', [ComprehensiveController::class, 'store'])->name('store');
+    });
 });
