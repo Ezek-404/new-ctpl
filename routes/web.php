@@ -59,6 +59,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Maps to URL: /admin/comprehensive and names it: admin.comprehensive.index / admin.comprehensive.store
     Route::group(['prefix' => 'comprehensive', 'as' => 'comprehensive.'], function () {
         Route::get('/', [ComprehensiveController::class, 'index'])->name('index');
+        Route::get('/view/{id}', [ComprehensiveController::class, 'show'])->name('show');
         Route::post('/store', [ComprehensiveController::class, 'store'])->name('store');
     });
 });

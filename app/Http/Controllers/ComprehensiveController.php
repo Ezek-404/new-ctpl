@@ -13,8 +13,18 @@ class ComprehensiveController extends Controller
      */
     public function index()
     {
-        // Mapped exactly to: resources/views/admin/comprehensive/index.blade.php
-        return view('admin.comprehensive.index'); 
+        // Fetch records from database model
+        $policies = ComprehensiveInsurance::orderBy('created_at', 'desc')->get();
+
+        return view('admin.comprehensive.index', compact('policies'));
+    }
+
+    public function show($id)
+    {
+        // Find matching profile entry or fail with 404 block page
+        $policy = ComprehensiveInsurance::findOrFail($id);
+
+        return view('admin.comprehensive.view', compact('policy'));
     }
 
     /**

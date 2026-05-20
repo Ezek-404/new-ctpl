@@ -45,12 +45,26 @@
         font-weight: 700;
         padding-bottom: 10px;
     }
+
+    /* Table Adjustments for Dark Theme Container */
+    .table-dark-custom {
+        background-color: #2b3035 !important;
+        color: #fff !important;
+    }
+    .table-dark-custom th {
+        background-color: #212529 !important;
+        border-color: #4b545c !important;
+    }
+    .table-dark-custom td {
+        border-color: #4b545c !important;
+        vertical-align: middle !important;
+    }
 </style>
 @stop
 
 @section('content_header')
     <div class="d-flex justify-content-between align-items-center mb-2">
-        <h1 class="text-white">Comprehensive Insurance</h1>
+        <h1 class="text-white">Comprehensive Insurance Records</h1>
         <div>
             <x-adminlte-button label="New Comprehensive" theme="primary" icon="fas fa-plus-circle" 
                 class="shadow-sm mr-2" data-toggle="modal" data-target="#modalNewPolicyXl"/>
@@ -63,8 +77,62 @@
 
 @section('content')
     <div class="card card-outline card-primary shadow">
-        <div class="card-body">
-            <p>Comprehensive Insurance Content Loaded.</p>
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-list mr-2"></i>Active Policy Directory</h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-dark-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Policy No.</th>
+                            <th>SOA No.</th>
+                            <th>Assured Name</th>
+                            <th>Vehicle (Brand/Model)</th>
+                            <th>Plate No.</th>
+                            <th class="text-right">Insured Value</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($policies ?? [] as $policy)
+                            <tr>
+                                <td class="font-weight-bold text-info">{{ $policy->policy_no }}</td>
+                                <td>{{ $policy->soa_no }}</td>
+                                <td>{{ $policy->assured }}</td>
+                                <td>
+                                    <span class="badge badge-secondary mr-1">{{ $policy->brand }}</span> 
+                                    {{ $policy->model }}
+                                </td>
+                                <td><span class="badge badge-warning">{{ $policy->plate_no }}</span></td>
+                                <td class="text-right font-weight-bold text-success">
+                                    ₱{{ number_format($policy->value, 2) }}
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ route('admin.comprehensive.show', $policy->id) }}" class="btn btn-info" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-primary" title="Edit Record">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-success" title="Print Certificate">
+                                            <i class="fas fa-print"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    <i class="fas fa-folder-open fa-2x mb-2 d-block"></i>
+                                    No comprehensive insurance data records found.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -157,10 +225,10 @@
                     <h5 class="text-primary border-bottom pb-2 mb-3"><i class="fas fa-id-card mr-2"></i>Policy & Client Information</h5>
                     <div class="row">
                         <x-adminlte-input name="policy_no" label="Policy Number" fgroup-class="col-md-6" placeholder="Enter Policy No." required/>
-                        <x-adminlte-input name="soa_no" label="SOA Number" fgroup-class="col-md-6" placeholder="Enter SOA No."/>
+                        <x-adminlte-input name="soa_no" label="SOA Number" fgroup-class="col-md-6" placeholder="Enter SOA No." required/>
                         
                         <x-adminlte-input name="assured" label="Assured / Client Name" fgroup-class="col-md-12" placeholder="Full Name" required/>
-                        <x-adminlte-input name="address" label="Address" fgroup-class="col-md-12" placeholder="Complete Address"/>
+                        <x-adminlte-input name="address" label="Address" fgroup-class="col-md-12" placeholder="Complete Address" required/>
                         
                         <x-adminlte-input name="mortgagee" label="Mortgagee (Optional)" fgroup-class="col-md-12" placeholder="e.g., BDO, BPI (Leave blank if none)"/>
                         
@@ -201,16 +269,16 @@
                 <div class="col-md-6">
                     <h5 class="text-primary border-bottom pb-2 mb-3"><i class="fas fa-car mr-2"></i>Vehicle Specifications</h5>
                     <div class="row">
-                        <x-adminlte-input name="model" label="Model" fgroup-class="col-md-4" />
-                        <x-adminlte-input name="brand" label="Brand" fgroup-class="col-md-4" />
-                        <x-adminlte-input name="type" label="Type / Body Type" fgroup-class="col-md-4" />
+                        <x-adminlte-input name="model" label="Model" fgroup-class="col-md-4" required/>
+                        <x-adminlte-input name="brand" label="Brand" fgroup-class="col-md-4" required/>
+                        <x-adminlte-input name="type" label="Type / Body Type" fgroup-class="col-md-4" required/>
                         
-                        <x-adminlte-input name="color" label="Color" fgroup-class="col-md-6" />
-                        <x-adminlte-input name="plate_no" label="Plate Number" fgroup-class="col-md-6" />
+                        <x-adminlte-input name="color" label="Color" fgroup-class="col-md-6" required/>
+                        <x-adminlte-input name="plate_no" label="Plate Number" fgroup-class="col-md-6" required/>
                         
-                        <x-adminlte-input name="chassis_no" label="Chassis Number" fgroup-class="col-md-12" />
-                        <x-adminlte-input name="engine_no" label="Engine Number" fgroup-class="col-md-6" />
-                        <x-adminlte-input name="file_no" label="File Number" fgroup-class="col-md-6" />
+                        <x-adminlte-input name="chassis_no" label="Chassis Number" fgroup-class="col-md-12" required/>
+                        <x-adminlte-input name="engine_no" label="Engine Number" fgroup-class="col-md-6" required/>
+                        <x-adminlte-input name="file_no" label="File Number" fgroup-class="col-md-6" required/>
                     </div>
                 </div>
 
@@ -299,9 +367,21 @@ $(document).ready(function() {
     $('#btnSavePolicy').on('click', function(e) {
         e.preventDefault();
         
-        // Front-end verification (Excluded mortgagee from validation rules checks)
-        if(!$('input[name="policy_no"]').val() || !$('input[name="assured"]').val() || !$('#new_vehicle_price').val()) {
-            Swal.fire('Error', 'Please fill in all required fields (Policy No, Assured, and Vehicle Price).', 'error');
+        let requiredFields = [
+            'policy_no', 'soa_no', 'assured', 'address', 'value', 'rate',
+            'model', 'brand', 'type', 'color', 'plate_no', 'chassis_no', 'engine_no', 'file_no'
+        ];
+        
+        let missingFields = false;
+        requiredFields.forEach(function(name) {
+            let field = $('[name="' + name + '"]');
+            if (!field.val() || field.val().trim() === '') {
+                missingFields = true;
+            }
+        });
+
+        if (missingFields) {
+            Swal.fire('Error', 'Please fill in all required operational information fields.', 'error');
             return;
         }
 
@@ -318,13 +398,19 @@ $(document).ready(function() {
         btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
 
         $.ajax({
-            url: "{{ route('admin.comprehensive.store') }}", // <-- Fixed route target name string reference mapping pattern layout
+            url: "{{ route('admin.comprehensive.store') }}",
             method: "POST",
             data: $.param(formData),
             success: function(response) {
                 btn.prop('disabled', false).html('<i class="fas fa-save"></i> Save Policy');
                 if(response.success) {
-                    Swal.fire('Success!', 'Policy successfully saved.', 'success');
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Policy successfully saved to system record files.',
+                        icon: 'success'
+                    }).then(() => {
+                        window.location.reload(); // Reload to show the new data in table row
+                    });
                     $('#modalNewPolicyXl').modal('hide');
                     $('#newPolicyForm')[0].reset();
                 } else {
