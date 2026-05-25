@@ -34,7 +34,7 @@
             <a href="{{ route('admin.comprehensive.index') }}" class="btn btn-secondary shadow-sm mr-2">
                 <i class="fas fa-arrow-left mr-1"></i> Back to Directory
             </a>
-            <button class="btn btn-success shadow-sm" onclick="window.print()">
+            <button class="btn btn-success shadow-sm" onclick="printPremiumSheet('{{ route('admin.comprehensive.print', $policy->id) }}')">
                 <i class="fas fa-print mr-1"></i> Print Premium Sheet
             </button>
         </div>
@@ -268,3 +268,11 @@
         </div>
     </div>
 @stop
+
+<script>
+function printPremiumSheet(url) {
+    // Generates a background hidden printing sandbox frame instance
+    let printWindow = window.open(url, '_blank', 'width=900,height=1000');
+    printWindow.focus();
+}
+</script>

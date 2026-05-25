@@ -27,6 +27,12 @@ class ComprehensiveController extends Controller
         return view('admin.comprehensive.view', compact('policy'));
     }
 
+    public function printSheet($id)
+    {
+        $policy = ComprehensiveInsurance::findOrFail($id);
+        return view('admin.comprehensive.print-premium-sheet', compact('policy'));
+    }
+
     /**
      * Store a newly created policy resource in storage.
      */
