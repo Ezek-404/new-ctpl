@@ -123,7 +123,7 @@
             width: 11in; height: 7.7in; 
         }
         .policy-print-paper {
-            background-image: url('/images/cv_policy.jpg');
+            background-image: url('/images/pc_policy.jpg');
             background-size: 100% 100%; 
             width: 12in; height: 18in; 
         }
@@ -195,17 +195,17 @@
         .policy-no   { top: 1.21in; left: 7.43in; font-size: 18px !important; }
         .assured     { top: 1.65in; left: 0.03in; width: 5in; font-size: 18px !important; }
         .address     { top: 2.06in; left: 0.03in; width: 4in; font-size: 18px !important; }
-        .date-issued { top: 2.01in; left: 5.60in; font-size: 18px !important; }
-        .date-from   { top: 2.65in; left: 5.60in; font-size: 18px !important; }
-        .date-to     { top: 2.65in; left: 7.33in; font-size: 18px !important; }
-        .year { top: 3.33in; left: 0.03in; font-size: 18px !important; }
-        .make { top: 3.33in; left: 1.50in; font-size: 18px !important; }
-        .type { top: 3.33in; left: 3.54in; font-size: 18px !important; }
-        .color { top: 3.33in; left: 5.34in; width: 1.3in; font-size: 18px !important; }
-        .file { top: 3.33in; left: 7.12in; font-size: 18px !important; }
-        .plate { top: 3.71in; left: 0.03in; font-size: 18px !important; }
-        .chassis { top: 3.71in; left: 1.50in; font-size: 18px !important; }
-        .engine { top: 3.71in; left: 3.8in; font-size: 18px !important; }
+        .date-issued { top: 2.006in; left: 5.60in; font-size: 18px !important; }
+        .date-from   { top: 2.70in; left: 5.60in; font-size: 18px !important; }
+        .date-to     { top: 2.70in; left: 7.33in; font-size: 18px !important; }
+        .year { top: 3.35in; left: 0.03in; font-size: 18px !important; }
+        .make { top: 3.35in; left: 1.50in; font-size: 18px !important; }
+        .type { top: 3.35in; left: 3.54in; font-size: 18px !important; }
+        .color { top: 3.35in; left: 5.54in; width: 1.3in; font-size: 18px !important; }
+        .file { top: 3.35in; left: 7.12in; font-size: 18px !important; }
+        .plate { top: 3.73in; left: 0.03in; font-size: 18px !important; }
+        .chassis { top: 3.73in; left: 1.50in; font-size: 18px !important; }
+        .engine { top: 3.73in; left: 3.8in; font-size: 18px !important; }
 
         /* POLICY Print Coordinates */
         .p_policy-no   { top: 1.78in; left: 7.43in; }
