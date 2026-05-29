@@ -61,8 +61,8 @@
 
         .invoice-date          { top: 1.83in; left: 3.72in; }
         .invoice-received-from { top: 2.10in; left: 1in; width: 4.5in; text-align: center; }
-        .invoice-plate         { top: 2.53in; left: 4.2in; }
-        .invoice-amount-sub    { top: 2.75in; left: 2.42in; }
+        .invoice-plate         { top: 2.56in; left: 4.2in; }
+        .invoice-amount-sub    { top: 2.77in; left: 2.42in; }
         .invoice-amount-total  { top: 8.02in; left: 4.4in; }
 
         .field { font-size: 18px !important; color: black !important; }
