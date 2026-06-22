@@ -192,12 +192,12 @@
 
         /* COC Print Coordinates */
         .coc-no { display: none !important; }
-        .policy-no   { top: 1.21in; left: 7.43in; font-size: 18px !important; }
+        .policy-no   { top: 1.15in; left: 7.43in; font-size: 18px !important; }
         .assured     { top: 1.65in; left: 0.03in; width: 5in; font-size: 18px !important; }
         .address     { top: 2.06in; left: 0.03in; width: 4in; font-size: 18px !important; }
-        .date-issued { top: 2.006in; left: 5.60in; font-size: 18px !important; }
-        .date-from   { top: 2.70in; left: 5.60in; font-size: 18px !important; }
-        .date-to     { top: 2.70in; left: 7.33in; font-size: 18px !important; }
+        .date-issued { top: 1.99in; left: 5.60in; font-size: 18px !important; }
+        .date-from   { top: 2.65in; left: 5.60in; font-size: 18px !important; }
+        .date-to     { top: 2.65in; left: 7.33in; font-size: 18px !important; }
         .year { top: 3.32in; left: 0.03in; font-size: 18px !important; }
         .make { top: 3.32in; left: 1.50in; font-size: 18px !important; }
         .type { top: 3.32in; left: 3.54in; font-size: 18px !important; }
