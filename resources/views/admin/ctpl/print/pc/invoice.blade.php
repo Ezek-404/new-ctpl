@@ -59,11 +59,11 @@
             padding-left: 0.33in !important;
         }
 
-        .invoice-date          { top: 1.79in; left: 3.72in; }
-        .invoice-received-from { top: 2.07in; left: 1in; width: 4.5in; text-align: center; }
+        .invoice-date          { top: 1.79in; left: 3.62in; }
+        .invoice-received-from { top: 2.07in; left: 0.95in; width: 4.5in; text-align: center; }
         .invoice-plate         { top: 2.51in; left: 4.2in; }
-        .invoice-amount-sub    { top: 2.73in; left: 2.42in; }
-        .invoice-amount-total  { top: 8.02in; left: 4.4in; }
+        .invoice-amount-sub    { top: 2.73in; left: 2.35in; }
+        .invoice-amount-total  { top: 8.02in; left: 4.2in; }
 
         .field { font-size: 18px !important; color: black !important; }
     }

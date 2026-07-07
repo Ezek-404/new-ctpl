@@ -78,6 +78,7 @@
                             <div class="p_field p_plate">{{ $issuance->vehicle->plate_no }}</div>
                             <div class="p_field p_chassis">{{ $issuance->vehicle->chassis_no }}</div>
                             <div class="p_field p_engine">{{ $issuance->vehicle->engine_no }}</div>
+                            <div class="p_field p_amount">{{ $issuance->amount }}</div>
                         </div>
                     </div>
                 </div>
@@ -222,6 +223,7 @@
         .p_plate       { top: 3.71in; left: 0.40in; }
         .p_chassis     { top: 3.71in; left: 1.95in; }
         .p_engine      { top: 3.71in; left: 3.8in; }
+        .p_amount      { top: 6.86in; left: 7.48in; }
 
         .p_field { font-size: 16px !important; }
     }
